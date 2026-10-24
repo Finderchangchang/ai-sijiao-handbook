@@ -1,0 +1,1083 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>杰哥的 AI 私教 · Demo v2</title>
+<style>
+:root{
+  --bg:#f7f5f0;--paper:#fffdf9;--ink:#1d2129;--sub:#6b7280;--line:#ebe6dc;
+  --accent:#e8590c;--accent-soft:#fff1e8;--ok:#2f9e44;--ok-soft:#ebfbee;
+  --blue:#1c7ed6;--blue-soft:#e7f5ff;
+  --serif:"Noto Serif SC","Source Han Serif SC","Songti SC","SimSun",serif;
+  --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6}
+button{font:inherit;color:inherit}
+
+/* 顶栏 */
+.top{height:60px;display:flex;align-items:center;gap:20px;padding:0 24px;border-bottom:1px solid var(--line);background:var(--paper)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;flex:none}
+.logo{width:32px;height:32px;border-radius:9px;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:15px}
+.tag{font-size:11px;font-weight:500;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:999px}
+.search{margin-left:auto;display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;width:min(380px,40vw)}
+.search input{flex:1;border:none;outline:none;font:inherit;padding:8px 0;background:none}
+.search kbd{font-family:var(--mono);font-size:11px;color:var(--sub);border:1px solid var(--line);border-radius:5px;padding:0 5px;white-space:nowrap}
+.me{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:13px;background:#fff;flex:none}
+
+.main{display:grid;grid-template-columns:270px minmax(0,1fr) 400px;height:calc(100vh - 60px)}
+
+/* 左：目录 */
+.toc{border-right:1px solid var(--line);overflow:auto;padding:20px 12px 30px;background:#faf8f3}
+.toc-title{font-size:12px;color:var(--sub);font-family:var(--mono);margin:0 8px 14px;display:flex;align-items:center;gap:6px}
+.toc-title::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.ch{margin-bottom:4px}
+.ch-head{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:9px;cursor:pointer;font-weight:600}
+.ch-head:hover{background:#f1ede4}
+.ch-head.on{background:var(--accent-soft)}
+.ch-icon{width:24px;height:24px;border-radius:7px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;font-size:12px;color:var(--accent);flex:none;font-weight:600}
+.ch-n{margin-left:auto;font-size:11px;color:var(--sub);font-weight:400;font-family:var(--mono)}
+.it{padding:6px 8px 6px 42px;border-radius:9px;cursor:pointer;font-size:13px;color:#495057;position:relative}
+.it:hover{background:#f1ede4}
+.it.on{background:var(--accent-soft);color:var(--ink);font-weight:500}
+.it .st{position:absolute;left:26px;top:13px;width:7px;height:7px;border-radius:50%;background:#dee2e6}
+.it.seen .st{background:var(--ok)}
+.it.on .st{background:var(--accent)}
+.it.flash{animation:flash 1.4s}
+@keyframes flash{0%,100%{box-shadow:none}30%{box-shadow:0 0 0 2px var(--accent) inset;background:#ffe8cc}}
+.toc-foot{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.badge{display:inline-block;min-width:18px;padding:0 6px;border-radius:999px;background:var(--accent);color:#fff;font-size:11px;line-height:18px;text-align:center;margin-left:auto;font-weight:600}
+.badge.pulse{animation:pulse .5s 3}
+@keyframes pulse{50%{transform:scale(1.35)}}
+
+/* 中：阅读区 */
+.reader{overflow:auto;padding:40px 48px 70px;background:var(--paper)}
+.inner{max-width:740px;margin:0 auto}
+.crumb{font-size:12px;color:var(--sub);font-family:var(--mono);margin-bottom:16px}
+.crumb a{color:var(--accent);cursor:pointer}
+.rtitle{font-family:var(--serif);font-size:32px;line-height:1.35;font-weight:800;margin-bottom:14px}
+.lead{font-size:16px;color:#495057;line-height:1.9;margin-bottom:20px}
+.meta{font-family:var(--mono);font-size:12px;color:var(--sub);padding:11px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:28px;display:flex;gap:12px;flex-wrap:wrap}
+.sec{border:1px solid var(--line);border-radius:14px;padding:22px 26px;margin-bottom:18px;background:#fff}
+.sec h2{font-family:var(--serif);font-size:20px;margin-bottom:12px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.sec h2 i{color:var(--accent);font-size:14px}
+.sec .body{font-size:15px;line-height:1.9}
+.quote{font-size:18px;line-height:1.85;border-left:4px solid var(--accent);padding:2px 0 2px 16px}
+.draft{font-family:system-ui,sans-serif;font-style:normal;font-weight:500;font-size:12px;color:#e67700;background:#fff9db;padding:1px 7px;border-radius:5px}
+.actbox{background:var(--accent-soft);border-radius:10px;padding:14px 16px;font-size:15px;line-height:1.8;margin-bottom:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 14px;cursor:pointer;font-size:13px}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{color:#fff;opacity:.9}
+.qchip{border:1px solid var(--line);background:#f8f9fa;border-radius:999px;padding:4px 12px;margin:0 6px 8px 0;cursor:pointer;font-size:13px}
+.qchip:hover{border-color:var(--accent);color:var(--accent);background:#fff}
+.navrow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:28px}
+.navbtn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px 16px;cursor:pointer;text-align:left;font-weight:500}
+.navbtn:hover{border-color:var(--accent)}
+.navbtn small{display:block;color:var(--sub);font-size:12px;font-weight:400;font-family:var(--mono)}
+.navbtn.r{text-align:right;grid-column:2}
+.sec.flash{animation:secflash 1.8s}
+@keyframes secflash{0%,100%{box-shadow:0 0 0 0 rgba(232,89,12,0)}25%{box-shadow:0 0 0 5px rgba(232,89,12,.3)}}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
+.tile{border:1px solid var(--line);border-radius:14px;padding:16px;background:#fff;cursor:pointer;transition:.15s}
+.tile:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.05)}
+.tile b{display:block;font-size:15px;margin-bottom:4px}
+.tile p{font-size:13px;color:var(--sub)}
+.lvgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lvc{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:10px;cursor:pointer}
+.lvc:hover{background:#f8f6f1}
+.lvc b{display:block;font-size:14px}
+.lvc small{color:var(--sub);font-size:12px}
+.goalbox{border:1px dashed var(--accent);border-radius:12px;padding:14px 16px;margin-bottom:20px;background:#fffaf5;font-size:15px}
+.goalbox span{display:block;font-size:12px;color:var(--accent);font-weight:600;margin-bottom:2px}
+.list{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:18px;background:#fff}
+.lrow{display:flex;gap:14px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--line);cursor:pointer}
+.lrow:last-child{border-bottom:none}
+.lrow:hover{background:#faf8f3}
+.ln{font-family:var(--mono);color:var(--sub);font-size:12px}
+.lt{flex:1;font-weight:500}
+.ls{font-size:12px;color:#adb5bd}
+.lrow.seen .ls{color:var(--ok)}
+.emptybox{border:1px dashed var(--line);border-radius:12px;padding:18px;color:var(--sub);background:#fff}
+.gapitem{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px;background:#fff}
+.gapitem.fresh{border-color:#ffc9c9;background:#fff5f5}
+.gapitem b{display:block}
+.gapitem small{color:var(--sub)}
+.gapitem .cnt{color:#c92a2a;font-weight:600;margin-right:10px}
+.flow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:13px;margin-bottom:20px}
+.flow span{background:#fff;border:1px solid var(--line);border-radius:7px;padding:3px 10px}
+
+/* 右：陪练聊天 */
+.chat{border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0;background:#fff}
+.chead{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.cav{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#ff922b,#e8590c);color:#fff;display:grid;place-items:center;font-weight:700;font-size:16px;position:relative;flex:none}
+.cav::after{content:'';position:absolute;right:0;bottom:0;width:10px;height:10px;border-radius:50%;background:#40c057;border:2px solid #fff}
+.cname{font-weight:600}
+.csub{font-size:12px;color:var(--sub)}
+.modes{margin-left:auto;display:flex;background:#f1ede4;border-radius:9px;padding:3px;flex:none}
+.modes button{border:none;background:none;font-size:12px;padding:4px 10px;border-radius:7px;cursor:pointer;color:var(--sub)}
+.modes button.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.prog{padding:12px 16px;border-bottom:1px solid var(--line);background:#fffdf9}
+.prog-row{display:flex;justify-content:space-between;font-size:12px;color:var(--sub)}
+.prog-row b{color:var(--ink);font-family:var(--mono)}
+.pbar{height:5px;background:#eee;border-radius:99px;margin:6px 0 10px;overflow:hidden}
+.pbar i{display:block;height:100%;width:0;background:var(--accent);transition:width .4s}
+.mils{display:flex;gap:6px}
+.mil{flex:1;display:flex;align-items:center;gap:6px;font-size:12px;padding:6px 8px;border-radius:9px;background:#f8f9fa;color:#adb5bd}
+.mil .ic{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#e9ecef;font-size:11px;flex:none}
+.mil.got{background:var(--ok-soft);color:var(--ok);font-weight:600}
+.mil.got .ic{background:var(--ok);color:#fff}
+#msgs{flex:1;overflow:auto;padding:16px 14px 8px;display:flex;flex-direction:column;gap:12px;background:#fbfaf7}
+.msg{display:flex;flex-direction:column;max-width:92%}
+.msg.me{align-self:flex-end;align-items:flex-end}
+.msg.bot{align-self:flex-start}
+.bubble{padding:10px 14px;border-radius:14px;background:#fff;border:1px solid var(--line)}
+.msg.me .bubble{background:var(--ink);color:#fff;border-color:var(--ink);border-bottom-right-radius:4px}
+.msg.bot .bubble{border-bottom-left-radius:4px}
+.bubble p+p{margin-top:7px}
+.bubble p:empty{display:none}
+.bubble p b{color:var(--accent);font-weight:600}
+.retr{font-size:12px;color:var(--sub);margin-bottom:6px;display:flex;flex-direction:column;gap:4px}
+.retr.miss{color:#c92a2a}
+.hit{display:flex;justify-content:space-between;gap:10px;align-items:center;text-align:left;font-size:12px;background:var(--blue-soft);color:#1864ab;border:1px solid #d0ebff;border-radius:8px;padding:5px 10px;cursor:pointer}
+.hit:hover{border-color:var(--blue)}
+.hit em{font-style:normal;font-weight:600;flex:none}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.act-btn{font-size:12px;padding:5px 12px;border-radius:999px;border:1px solid var(--accent);background:#fff;color:var(--accent);cursor:pointer}
+.act-btn.primary{background:var(--accent);color:#fff}
+.act-btn:disabled{opacity:.35;cursor:default}
+.typing{display:flex;gap:4px;padding:14px}
+.typing i{width:6px;height:6px;border-radius:50%;background:#adb5bd;animation:bounce 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-4px);opacity:1}}
+.ctx{display:none;align-items:center;gap:8px;font-size:12px;color:var(--sub);padding:8px 14px 0;border-top:1px solid var(--line)}
+.ctx.on{display:flex}
+.ctx b{color:var(--ink);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.ctx button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:2px 10px;cursor:pointer;font-size:12px;flex:none}
+.ctx button:hover{border-color:var(--accent);color:var(--accent)}
+.sugs{display:flex;gap:6px;flex-wrap:wrap;padding:8px 14px 0}
+.sug{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer}
+.sug:hover{border-color:var(--accent);color:var(--accent)}
+.inbar{display:flex;gap:8px;padding:10px 14px 6px}
+#inp{flex:1;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;outline:none}
+#inp:focus{border-color:var(--accent)}
+#send{padding:0 18px;border:none;border-radius:10px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer}
+.fine{font-size:11px;color:#9aa0a6;padding:0 14px 10px}
+
+/* 频道切换 */
+.chans{display:flex;gap:2px;background:#f1ede4;border-radius:10px;padding:3px;flex:none}
+.chans button{border:none;background:none;padding:5px 14px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--sub)}
+.chans button.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+body.camp .chat,body.camp .search{display:none}
+body.camp .main{grid-template-columns:320px minmax(0,1fr)}
+.ch-icon.w{width:auto;min-width:24px;padding:0 5px;font-size:11px}
+.it .tm{display:block;font-family:var(--mono);font-size:11px;color:#adb5bd;font-weight:400}
+.who{font-size:11px;border-radius:5px;padding:1px 7px;background:#f1ede4;color:#495057;margin-left:6px;font-weight:500;white-space:nowrap}
+.who.y{background:#fff0f6;color:#c2255c}
+.sec.todo{opacity:.6;border-style:dashed}
+.fixbox{background:#fff9db;border:1px solid #ffe066;border-radius:10px;padding:12px 16px;font-size:14px;line-height:1.8;color:#5c3c00;margin-bottom:18px}
+.fixbox b{color:#e67700}
+.it .fx{color:#e67700;font-size:11px;margin-left:4px}
+.jscat{font-weight:700;margin:16px 0 8px;color:var(--accent)}
+.jsc{border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:8px;background:#fff}
+.jsc summary{cursor:pointer;display:flex;gap:10px;flex-wrap:wrap;align-items:baseline}
+.jsc summary span{color:var(--sub);font-size:13px}
+.jsm{font-size:13px;color:var(--sub);margin:8px 0}
+.jsp{white-space:pre-wrap;font-family:inherit;font-size:13px;background:#faf8f3;border-radius:8px;padding:10px 12px;margin:0 0 8px;line-height:1.8}
+.shotimg{margin:10px 0 16px}
+.shotimg img{display:block;max-width:100%;border:1px solid var(--line);border-radius:10px;box-shadow:0 4px 14px rgba(0,0,0,.06)}
+.shotimg figcaption{font-size:12px;color:var(--sub);margin-top:6px;text-align:center}
+.ql{padding-left:22px;font-size:15px;line-height:2}
+.stp{display:flex;gap:12px;margin-bottom:4px}
+.stp>b{flex:none;width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:12px;margin-top:4px}
+.stp>div{flex:1;font-size:15px;line-height:1.85}
+.shot{border:1px dashed #ced4da;border-radius:10px;padding:14px;text-align:center;color:#adb5bd;font-size:12px;margin:8px 0 14px;background:#fafafa}
+.pit{display:grid;grid-template-columns:1fr 1.5fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px;line-height:1.75}
+.pit:last-child{border-bottom:none}
+.pit>div:first-child{font-weight:600}
+.dl{list-style:none;font-size:15px;line-height:2}
+.dl li::before{content:'☐ ';color:var(--ok)}
+.ex{border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:12px;background:#fcfbf8}
+.ex h3{font-size:15px;margin-bottom:8px}
+.ex table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.7}
+.ex td{border-top:1px solid var(--line);padding:6px 8px;vertical-align:top}
+.ex td:first-child{width:96px;color:var(--sub);white-space:nowrap}
+details.notes summary{cursor:pointer;font-weight:600;color:var(--sub)}
+details.notes ul{margin-top:10px;padding-left:20px;font-size:14px;line-height:1.9;color:#495057}
+@media(max-width:900px){.pit{grid-template-columns:1fr;gap:2px}}
+.phr{display:inline-block;border:1px solid var(--line);background:#f8f9fa;border-radius:999px;padding:4px 12px;margin:0 6px 8px 0;font-size:13px;font-family:var(--mono)}
+
+@media(max-width:1180px){.main{grid-template-columns:220px minmax(0,1fr) 340px}body.camp .main{grid-template-columns:260px minmax(0,1fr)}.reader{padding:28px 26px 60px}.tiles{grid-template-columns:1fr}.lvgrid{grid-template-columns:1fr}}
+@media(max-width:900px){.main,body.camp .main{grid-template-columns:1fr;height:auto}.chans button{padding:5px 8px}.toc{max-height:280px;border-right:none;border-bottom:1px solid var(--line)}.chat{height:85vh;border-left:none;border-top:1px solid var(--line)}.search{display:none}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><div class="logo">杰</div>杰哥的 AI 私教 <span class="tag" id="btag">Demo v2 · ChatGPT</span></div>
+  <div class="chans" id="chans"><button data-chan="a" class="on">AI 入门</button><button data-chan="b">AI控制AI 实训营</button></div>
+  <div class="search"><span>🔍</span><input id="topq" placeholder="用你自己的话问，私教翻知识库回答…"><kbd>Enter</kbd></div>
+  <div class="me">你</div>
+</header>
+
+<div class="main">
+  <aside class="toc" id="tree"></aside>
+  <main class="reader" id="reader"></main>
+  <section class="chat">
+    <div class="chead">
+      <div class="cav">杰</div>
+      <div><div class="cname">杰哥的 AI 分身</div><div class="csub">口气是杰哥的，人不是</div></div>
+      <div class="modes"><button data-mode="guide">跟着走</button><button data-mode="free">自由翻</button></div>
+    </div>
+    <div class="prog">
+      <div class="prog-row"><span>看过的卡</span><b id="pnum">0/0</b></div>
+      <div class="pbar"><i id="pbar"></i></div>
+      <div class="mils" id="mils"></div>
+    </div>
+    <div id="msgs"></div>
+    <div class="ctx" id="ctx"></div>
+    <div class="sugs" id="sugs"></div>
+    <div class="inbar"><input id="inp" placeholder="哪里卡住了，直接问…"><button id="send">发送</button></div>
+    <div class="fine">演示版：用简单的文字匹配模拟向量检索，回答由命中的卡片拼成；正式版由大模型基于卡片生成。</div>
+  </section>
+</div>
+
+<script>
+/* ================= 数据 ================= */
+const LEVELS=[
+  {id:0,name:'开口',icon:'口',goal:'自己打开 ChatGPT，问出第一个问题',intro:'用过 AI 的同学可以直接跳过这一关。'},
+  {id:1,name:'摸底',icon:'摸',goal:'私教聊几句，摸清你用到哪一步',intro:'私教会问你几个问题，帮你判断从哪一关开始。'},
+  {id:2,name:'指挥它改',icon:'改',goal:'对第一版说出哪里不对，改 3 轮以上，拿到满意的版本',intro:'AI 的第一版永远只是草稿。会指挥它改，才算真正会用。',badge:'会指挥'},
+  {id:3,name:'给参考',icon:'参',goal:'丢给它一个喜欢的样子，说出喜欢的是哪一点',intro:'你不用会做，但得说得出自己喜欢什么。',badge:'会给参考'},
+  {id:4,name:'立规矩',icon:'规',goal:'把反复交代的要求存成一段规矩，下次直接用',intro:'同样的话别说第三遍。存成规矩，就是 skill 的雏形。',badge:'会立规矩'},
+  {id:5,name:'验收',icon:'验',goal:'挑出 AI 结果里的一处错，并让它改对',intro:'这一关的卡还在准备。直播里有人问过的相关问题，已经记进待补清单。'},
+  {id:6,name:'独立',icon:'独',goal:'自己挑一件新活，私教不插手',intro:'自己挑一件新活，做完拿给私教看。'},
+  {id:9,name:'进阶',icon:'进',goal:'skill、让一个 AI 指挥别的 AI、选模型、管资料',intro:'前面几关有了手感，这些名词自然就通了。'}
+];
+
+// 杰哥说 = 直播原话（只修了错别字）；打个比方 = AI 草稿，待杰哥替换
+const CARDS=[
+ {id:'c03',lv:2,q:'我哪知道它弄得对不对？',ask:['怎么判断 AI 做得好不好','它给的东西我看不懂','第一版不满意怎么办','怎么指挥 AI 改'],kw:['对不对','判断','不满意','第一版','好不好','怎么改'],
+  say:'先让它生成一套，然后你再指挥它就好了。用同样的方式往复几次，就能沉淀成自己的 skill。',
+  ana:'你是甲方，不用会画图，但你得会说「这里不对」。',
+  act:'拿它刚出的第一版，只挑一处你最不满意的地方，用一句话告诉它：改哪、改成什么样。'},
+ {id:'c01',lv:3,q:'审美不行，怎么提高？',ask:['怎么提高审美','我审美很一般','不知道什么样算好看'],kw:['审美','品味','什么样算好看'],
+  say:'不需要提高，你知道什么好看就行。',
+  ana:'你不会做菜，但你吃得出好不好吃。挑得出来就够了，做是 AI 的事。',
+  act:'今天刷到觉得好看的网站或海报，截 3 张存起来，每张写一句「我喜欢它哪里」。'},
+ {id:'c02',lv:3,q:'网站怎么做才好看？',ask:['AI 做的网页不好看','页面看着很土','做出来不高级','怎么让页面更好看'],kw:['网站','网页','页面','好看','土','高级','丑'],
+  say:'把你喜欢的网站，还有你喜欢它的点，都扔给 AI，让它帮你炼丹就好。',
+  ana:'跟装修师傅说「我要好看的」，他只能瞎猜；甩几张样板间照片说「要这种木头色」，一次就对路。',
+  act:'挑 1 个你喜欢的网站截图，连同「喜欢它哪一点」一起丢给 AI，让它照这一点改你的页面。'},
+ {id:'c04',lv:3,q:'AI 只学到表面，做不出效果怎么办？',ask:['蒸馏是什么','把喜欢的网站给 AI，它做得不像','怎么让 AI 学到精髓','模仿得不像'],kw:['蒸馏','表面','精髓','不像','模仿','学不会'],
+  say:'多蒸几次就好了，规矩立好了就行。你用牛的模型，它自己就帮你考虑好了；用差的模型，你就得一点一点教。',
+  ana:'就像带徒弟。只给他看一次样品，他只能学个样子；你指着说「这里留白多、这里字小」，说上三回，他就懂了。',
+  act:'把参考图丢给它之后，每轮只指出一个「不像」的地方，来回 3 轮，最后让它总结它学到了哪几条。'},
+ {id:'c13',lv:3,q:'有没有好看的 UI？我想做个朋友圈图',ask:['小姐姐喜欢的 UI','朋友圈配图怎么做','推荐个好看的界面风格'],kw:['朋友圈','配图','ui','小姐姐','海报'],tool:'ChatGPT',
+  say:'用 GPT 生成就行。',
+  ana:'你当导演，它当美工。',
+  act:'告诉它：发朋友圈用、什么风格、配什么文字，让它一次出 3 张，你挑一张再指挥它改。'},
+ {id:'c05',lv:4,q:'让 AI 自由发挥，结果一团乱？',ask:['让它自发散，给的方向我看不懂','怎么优化原来的 skill','不知道是不是正向迭代','不知道该限制啥'],kw:['自发散','自由发挥','发散','方向','看不懂','迭代','限制','范围','优化'],
+  say:'你都自发散了，你还想要结果？做梦呢吧。AI 不是人，你要限制范围；人也要限制范围啊。要么请人（用牛的模型，比如 Claude），要么就自己练。',
+  ana:'跟新员工说「你看着办」，他交回来的东西，你多半看不懂。',
+  act:'先回我三句话：这个东西给谁用、干哪一件事、做成什么样算好。把这三句话发给 AI 再开工。'},
+ {id:'c06',lv:4,q:'skill 是什么？怎么做？',ask:['怎么做 skill','skill 到底是啥','怎么让 AI 以后都按这个来','做成 skill 以后是不是自动就这么干了'],kw:['skill','技能','沉淀','以后都按'],
+  say:'同样的事，指挥它往复几次，规矩立好，存下来，就是你自己的 skill。以后它自动就按这个模式做了。',
+  ana:'就像菜谱。第一次做菜靠尝，做熟了写成菜谱，下回照着做就行。',
+  act:'把你这周对 AI 重复说了两次以上的要求，写成 5 条以内的规矩，存成一个文件。'},
+ {id:'c14',lv:4,q:'用了好多 AI，资料怎么统一管理？',ask:['有没有做统一的数据管理','换个 AI 又得从头教','聊天记录和规矩散得到处都是'],kw:['统一','资料','数据管理','从头教','散得','本地'],tool:'Claude Code / Codex；网页版 ChatGPT 见「马上动手」',
+  say:'本地存储即可。Claude、Codex 这类工具不用上云，AI 自己能找到。',
+  ana:'资料放在自己家抽屉里，换哪个助理来都找得到。',
+  act:'用网页版 ChatGPT 的话：把常用资料和规矩放进它的「项目」里，或者存成一个文档，每次开工先丢给它。'},
+ {id:'c07',lv:9,q:'哪个模型好用？',ask:['给模型排个序','国内国外用哪个 AI','Claude 和 Codex 哪个强','模型怎么选'],kw:['模型','哪个','排序','国内','国外','claude','codex','grok','gemini','deepseek'],
+  say:'Claude、Claude、Claude，我用起来无敌。Codex 是全能的 AI；Grok 像没有感情的程序员；Gemini 文字功底好，适合洗稿。',
+  ana:'像组团队：有人擅长写代码，有人擅长写文案，各用所长。',
+  act:'拿同一个问题问两个不同的 AI，对比一下谁更合你胃口。'},
+ {id:'c08',lv:9,q:'token 要不要省？',ask:['token 太贵了','怎么省 token','省 token 的 skill 有用吗'],kw:['token','太贵','费用','花钱'],
+  say:'token 要花，不要省。省 token 的 skill 对你们没用。你想不想舒服地工作？我就是垫钱干的，想明白了就能赚回来。token 管够，干吧。',
+  ana:'学车别心疼油钱，练得越多上路越稳。',
+  act:'这周别算计次数，有问题就问，问到满意为止。'},
+ {id:'c09',lv:9,q:'怎么让一个 AI 安排其他 AI 干活？',ask:['多个 AI 怎么配合','让 Claude 去调用别的模型','总控是啥','Claude Code 调 Grok 和 DeepSeek'],kw:['调用','总控','其他ai','别的模型','agent','多个ai','安排','配合'],
+  say:'比如我用 Claude Code 当总控，Grok 负责写代码，DeepSeek 负责写文字，按需调用，最后总控来验收。这个模式做成 skill，以后自动就按这个来。',
+  ana:'你是包工头，不用亲自砌墙，但得会派活、会验收。',
+  act:'先别急着上多个 AI。用一个 AI 时，先练「把一件事拆成三步交给它，每步验收」。'},
+ {id:'c10',lv:9,q:'怎么才能把 AI 管好？',ask:['AI 不听话怎么办','怎么跟 AI 交代活','管 AI 有什么诀窍'],kw:['管好','管理','不听话','交代','诀窍','管人'],
+  say:'要想把 AI 管好，先学习一下如何管理人、如何协调工作。',
+  ana:'AI 就是个特别勤快、但不会看脸色的新员工。',
+  act:'回想你带过最好的一个新人，你当时是怎么交代活的？照那个方式跟 AI 说一遍。'},
+ {id:'c11',lv:9,q:'做小程序、网页，存储怎么省钱？',ask:['图片视频存哪里便宜','OSS 怎么选','服务器存储太贵'],kw:['存储','oss','七牛','阿里云','小程序','存哪'],
+  say:'阿里云 OSS、七牛云，等活动的时候买。',
+  ana:'租仓库别一上来就租整栋楼。',
+  act:'先看清现在一个月用了多少，再挑活动价的小套餐。'},
+ {id:'c12',lv:9,q:'自定义 API 接入是怎么回事？',ask:['API key 怎么用','自定义 API 是软件内部的 skill 吗','别的模型要接也得装这个吗'],kw:['api','密钥','key','接入','自定义'],
+  say:'是 AI 的开发工具内部写了一段代码，去完成调用。你直接把密钥给它，告诉它是哪个平台，它就去干了。',
+  ana:'像给司机一把车钥匙，再告诉他去哪。',
+  act:'密钥只交给你自己电脑上的工具，别贴进网页聊天、截图或者群里。'},
+ {id:'c15',lv:9,q:'AI 能操作硬件吗？',ask:['具身智能能讲讲吗','让 AI 控制机器人','嵌入式模型怎么玩'],kw:['硬件','具身','机器人','嵌入式','机械','设备'],
+  say:'软件和硬件没有本质区别，就是执行转化成了动作。',
+  ana:'软件是让 AI 动鼠标，硬件是让 AI 动机械臂，脑子是同一套。',
+  act:'先把软件这块玩明白：让 AI 帮你干完一件电脑上的活。硬件是同一个思路，只是延迟和环境要求高一些。'}
+];
+
+const GAPS=[{q:'开发出来结构比较乱，需要一个一个全部去改，怎么办？',n:1,src:'直播提问 · 杰哥还没答',kw:['结构','乱']}];
+
+const SUGS=['AI 给我做的页面总是土土的，咋整？','skill 到底是个啥？','能不能让一个 AI 去指挥其他 AI 干活？','AI 写的代码结构乱，只能一个个改？'];
+
+/* ================= 频道 B：AI控制AI 实训营（目录稿，按海报排） ================= */
+const CAMP=[
+ {id:'pre',icon:'前',name:'课前准备',full:'课前准备（开课前 7 天，线上装机会）',goal:'软件装好、账号登好、3 样资料交齐，开课当天直接开干',items:[
+  {id:'p1',no:'0.1',t:'注册 ChatGPT 账号',do:'只在网页上注册，用邮箱收验证码，能聊一句就算完成（照公众号「杰哥的AI踩坑日记」那篇《小白登录Codex超详细全流程》的第一步）。注册好把邮箱报给主办方充会员；不用装软件，桌面版现场装',use:'D1 上午 01',who:'学员自己'},
+  {id:'p2',no:'0.2',t:'注册飞书',do:'用来建客户表：客户在小工具里提交的信息，自动进你的飞书表格。建议用自己注册的个人飞书：用公司飞书，扫码建机器人要等管理员审批',use:'D1 下午 02；D2 上午 01（接飞书）',who:'学员自己'},
+  {id:'p8',no:'0.3',t:'注册 ChatCut 免费账号',do:'用邮箱注册免费版，不用绑卡。现场给 Codex 装剪视频插件时要登录',use:'D1 下午 03',who:'学员自己'},
+  {id:'p3',no:'0.4',t:'注册 GitHub，装 GitHub 工具并登录',do:'先注册 GitHub 账号（用户名会出现在网址里，起得像公司名，例如 taotaoju）；助教帮装 GitHub 命令行工具 gh，学员本人在浏览器里授权登录',use:'D2 上午 04',who:'助教'},
+  {id:'p5',no:'0.5',t:'装微信开发者工具和微信输入法',do:'开发者工具扫码登录一次；微信输入法学会「按住说话」',use:'D1 下午 05；全程口述',who:'助教'},
+  {id:'p6',no:'0.6',t:'交 3 样资料',do:'价目表、客户最常问的 10 个问题、几张产品或门店照片',use:'D1 上午 02、03',who:'学员自己'},
+  {id:'p7',no:'0.7',t:'装机验收',do:'助教对照清单逐项核对并截图存档：ChatGPT 网页能登录且会员已到账、飞书和 ChatCut 能登录、GitHub 已登录、开发者工具已登录、输入法能语音，并确认电脑能打开 Hermes 官网（D2 现场要下载安装）。没过的单独约时间补',use:'—',who:'助教'}]},
+ {id:'d1am',icon:'1上',name:'D1 上午 · 搭好 AI 开发环境',full:'DAY 1 上午｜搭好你的 AI 开发环境',goal:'上午结束：AI 开发环境 + 企业知识库 + 第一版官网',items:[
+  {id:'a1',no:'01',t:'安装官方版 Codex',poster:'安装官方版 Codex —— 掌握后续更新、升级与持续使用路径',do:'装 ChatGPT 桌面版（认准名字里没有 Classic 的）→ 用课前注册的邮箱登录 → 左上角切到 Codex（公众号那篇的第二、三步）→ 讲以后怎么更新升级 → 复制讲师发的工作区模板（实训营助手已在里面）→ 新建项目、点「信任文件夹」→ 说「用实训营助手（ai-camp）开始」',who:'柳',time:'09:00–09:30',body:{
+   quick:['打开微软商店搜 ChatGPT，装名字里没有 Classic 的那个（Mac 去官网下载）','用课前注册的邮箱登录，左上角切到 Codex','把讲师发的「工作区模板」文件夹复制一份，改成你的公司名（实训营助手已经放在里面）','在 Codex 里新建项目，选这个文件夹，点「信任文件夹」','说「用实训营助手（ai-camp）开始」'],
+   why:'Codex 是这两天的主力：写网页、做小工具、生图、写文案都靠它。它装在 ChatGPT 桌面版里，和你在网页上注册的是同一个账号。装好以后再给它装一个「实训营助手」：两天每一步怎么走、有什么规矩、做完怎么检查，都写在里面，你只要说「下一步」。Codex 更新很快，学会自己升级，回去才能一直用下去。',
+   say:['用实训营助手（ai-camp）开始。','现在到哪了？','Codex 怎么更新到最新版？'],
+   steps:[
+    {t:'Windows：打开「Microsoft Store」，搜 ChatGPT，认准发行方是 OpenAI、名字里没有 Classic 的那个，点安装。Mac：去 ChatGPT 官网下载桌面版。',shot:'微软商店里的 ChatGPT'},
+    {t:'打开 ChatGPT，点「继续登录」，在弹出的浏览器里填课前注册的邮箱，去邮箱拿验证码填回来；工作空间选「个人账户」。',shot:'登录 ChatGPT'},
+    {t:'回到 App，左上角下拉切到「Codex」，看到输入框就装好了。',shot:'切到 Codex'},
+    {t:'学会更新：Windows 版跟着微软商店自动更新，也可以在商店的「库」里手动点更新；Mac 版在菜单里检查更新。讲师现场演示一次。'},
+    {t:'把讲师发的「工作区模板」文件夹整个复制到电脑上（例如 D 盘），改名为你的公司名，例如「陶陶居AI工作区」。实训营助手已经放在里面的 .agents\\skills\\ai-camp 下（它是一个 skill，也就是一份教 AI 怎么干活的说明书），「资料」文件夹也建好了，不用自己建。Mac 上以「.」开头的文件夹默认看不到，也不好新建，所以由讲师提前建好。'},
+    {t:'在 Codex 里点「新建项目」，选刚才那个文件夹。弹出「信任此文件夹吗？」，点「信任文件夹」。',shot:'新建项目、选文件夹、信任',img:['assets/camp/a1-6a.png','assets/camp/a1-6b.png','assets/camp/a1-6c.png']},
+    {t:'在输入框说「用实训营助手（ai-camp）开始」。一定要点名实训营助手：只说「开始」两个字，它可能听不出你要上这门课（10-24 实测就没认出来）。它会建好进度表，然后问你公司全称和城市，这就进到下一节了。',shot:'说用实训营助手（ai-camp）开始',img:['assets/camp/a1-7a.png','assets/camp/a1-7b.png']}],
+   pits:[
+    ['商店里搜到两个 ChatGPT','装没有 Classic 的那个；按公众号那篇的说法，显示「此产品在你的市场中未提供」的是旧版（开课前在中国区商店再确认一次）'],
+    ['登录时弹「电话号码是必填项」','网络稳定一般不会弹；弹了就用短信或 WhatsApp 验证，不行先用主办方的备用账号上课'],
+    ['它回「你想先做什么？」，没按实训营的路子走','你可能只说了「开始」。再说一遍「用实训营助手（ai-camp）开始」；还不行，检查 ai-camp 是不是放在 .agents\\skills\\ 下面，新开对话再说'],
+    ['后面它说没有权限改文件','项目没有设成信任：在项目设置里改成信任，或叫助教'],
+    ['提示额度不够','会员可能没到账，找助教查充值；先用主办方备用账号']],
+   done:['ChatGPT 桌面版里能切到 Codex','工作区文件夹建好了，实训营助手放进去了','说「用实训营助手（ai-camp）开始」后，它问你公司全称和城市','你知道以后怎么更新 Codex'],
+   notes:['时长 30 分钟：开场 5 分钟（两天带走 9 样东西）→ 装桌面版并登录 10 分钟 → 讲怎么更新 3 分钟 → 放 skill 包、建项目、点信任 10 分钟 → 说「用实训营助手（ai-camp）开始」2 分钟','课前只注册账号、充好会员，软件现场装；30 人同时下载，备好讲师热点','讲师现场发「工作区模板」（U 盘或群文件）：里面已建好 .agents\\skills\\ai-camp 和空的「资料」文件夹','对应结营 01：知道以后怎么升级 Codex']}},
+  {id:'a2',no:'02',step:'1',t:'让 AI 读懂你的公司，建企业知识库',poster:'让 AI 读懂你的电脑 —— 分析电脑、文件与工作环境，建立专属 AI 企业知识库',fix:'海报写「读懂你的电脑」。实际只读你交的资料和网上的公开信息，不扫整台电脑',do:'AI 上网搜你的公司，再读你交的 3 样资料，生成企业档案；先报 3 个亮点，你核对价格、电话、地址等 5 项',who:'柳',time:'09:30–10:20',body:{
+   quick:['把课前交的 3 样资料拖进工作区的「资料」文件夹','回答 AI：公司全称 + 城市','等它搜（一般 1 分钟左右，慢的四五分钟），听它说查到了什么','它请你核对关键信息，哪里不对直接说','打开「企业档案」扫一眼，每条后面都有出处'],
+   why:'AI 不认识你的公司，你不给它资料，它只会猜一个「最像」的版本。这一节让它把网上的公开信息和你交的资料收拢成一份企业档案，每条写清出处，再由你拍板。后面的官网、小工具、话术、AI 员工，全都从这份档案里取事实：档案错一处，后面样样跟着错；档案对了，以后就不用一遍遍跟 AI 解释你是谁。网上搜不到也不丢人，正好说明你需要官网和 GEO。',
+   say:['我的公司是 XXX，在 XX 市。','电话不对，是 XXX。','这个价格不对，是 XXX 元。','同名的那几家都不是我们，我们是 XX 区那家。','网上搜不到我们，我口述一下：……','把档案里还待补的列给我。'],
+   steps:[
+    {t:'打开工作区的「资料」文件夹，把价目表、常见问题、照片拖进去。价目表是拍的照片也行，AI 会读图。',shot:'资料文件夹',img:'assets/camp/a2-1.png'},
+    {t:'回到 Codex，回答它的问题：公司全称 + 城市。只说这一句就行。',shot:'回答公司名和城市',img:'assets/camp/a2-2.png'},
+    {t:'等它搜。它会查官网和公众号、地图和点评、工商信息、新闻和资质、招聘信息这几类，再读你交的资料。10-24 用 GPT-6 Luna 实测不到 1 分钟；换想得更深的模型会慢一些，一般不超过四五分钟。'},
+    {t:'它先说查到的最有用的几条，不会为了凑数硬编。10-05 用陶陶居实测，说的是：品牌起源于 1880 年；2006 年被认定为中华老字号；官网上能查到总店的地址和电话。10-24 再测，它说的是：官网确认品牌始于 1880 年、经营餐饮和食品，记下了第十甫路总店的地址和电话，并请你核对「代表品牌还是某一家门店」。右边「来源」里能看到它真的上网搜过。',shot:'AI 报出的发现',img:'assets/camp/a2-4.png'},
+    {t:'它请你核对关键信息（公司名、地址、电话、主营、价格）和几条「待老板确认」，比如「你代表品牌，还是某一家门店」。对的不用管，不对的直接说，它会当场改档案。',shot:'核对和纠正',img:'assets/camp/a2-5.png'},
+    {t:'打开「企业档案.md」扫一眼：一共 9 节，每条后面有【来源】，查不到的写着「待补」。它还顺手生成了一份工作区规矩（AGENTS.md），以后每一步都照它来，你不用管。',shot:'企业档案',img:'assets/camp/a2-6.png'}],
+   pits:[
+    ['网上几乎搜不到我的公司','正常，小店多半这样。用微信输入法按住说 3 分钟：做什么、在哪、价格、客户常问什么，它会记成【老板口述】'],
+    ['搜到好几家同名的','它会一家一行列出来（名称、城市、地址），你说是哪家'],
+    ['它写的价格和我的不一样','以你交的价目表为准；网上看到的价格它会标「网上看到，待老板确认」，你说一句对不对'],
+    ['档案里一堆「待补」','不是它偷懒，是它不敢编。挑最要紧的口述补上，其余课后补'],
+    ['等了 10 分钟还没动静','联网搜索用不了时，它会只用资料和口述先出档案，注明「未联网」；还不行就举手叫助教'],
+    ['把别人公司的事写进来了','让它把这条挪到「同名或可能抓错的信息」那一节，或者直接说「这条删掉」']],
+   done:['档案里自家的价格、电话、地址是对的，你亲口核对过','每条信息后面都有【来源】','拿不准的都在「待老板确认」或「待补」里，没有编出来的','进度里这一步打了 ✅'],
+   notes:['时长 50 分钟：讲师大屏演示 10 分钟（用悦姐的公司，前一天跑好留一份，现场再跑一遍）→ 学员一起跑 25 分钟（AI 干活一般 1 分钟左右，其余时间核对）→ 抽 2 人说说 AI 查到了哪些自己都忘了的信息 10 分钟 → 收尾 5 分钟','讲这几句：「AI 不认识你，它只会猜。」「档案是后面所有东西的地基。」「网上搜不到不丢人，正好说明你需要官网。」「AI 说的你都要核一遍。」','课前：助教检查每人的 3 样资料交齐；30 人同时搜会慢，慢的人先看大屏','常见：学员照抄讲师演示里的价格 → 删掉换自己的；整份都是待补 → 让他口述 3 分钟','对应结营 01：能答对自家价格；「改一项信息、同步到官网」在 D2 上午 04 上线时练']}},
+  {id:'a3',no:'03',step:'2',t:'从 0 搭建第一个官网',poster:'从 0 搭建第一个官网 —— 让自己的产品和业务拥有独立展示入口',do:'说清给谁看、看完做什么、喜欢什么样 → 出初稿（图片先用你交的照片）→ 指挥它改一版 → 手机尺寸看一遍',who:'柳',time:'10:30–11:20',body:{
+   quick:['说「下一步」','回答 3 件事：给谁看、看完让他干什么、喜欢什么样（有喜欢的网站就发链接或截图）','等它出初稿，右边直接能看','挑一处最不满意的，说清改哪、改成什么样','手机宽度看一遍，按钮都点一下'],
+   why:'官网是你在网上的门面：客户听说你、搜到你，最后都会落到这一页，要一眼看懂你是谁、做什么、下一步找谁。今天的官网不花钱建站，Codex 照着你的档案直接写出来，样子你说了算。好不好看是你的口味，事实对不对按档案来：价格、电话、地址只从档案里取，档案里没有的就不放。',
+   say:['做官网，给 XX 的客户看，看完让他打电话预约。','我喜欢这个网站的配色和留白：（贴链接或截图）','首屏的按钮太靠下，手机上一眼看不到，挪到标题下面。','这个颜色太暗，换成我们招牌上的红色。','这张图不是我们店，删掉。','切到手机宽度看一下，有没有字挤在一起、按钮点不了。'],
+   steps:[
+    {t:'核对完档案，它一般会接着问你 3 件事（没问就说「下一步」）：给谁看；看完希望他做什么（打电话、到店、留资料）；喜欢什么样。没想法就说「你先按档案做，我再改」。新版 ChatGPT 会用选择题卡片问，点一个选项就行，也可以自己写。',shot:'回答 3 个问题',img:'assets/camp/a3-1.png'},
+    {t:'有喜欢的网站，直接把链接或截图发给它，再说一句喜欢的是哪一点：颜色、排版、照片的感觉。它只学样子，不抄人家的内容。',shot:'发参考网站'},
+    {t:'等它出初稿，右边预览直接能看。图片先用你交的照片；没有照片的位置先用色块，下午再用 AI 生成配图。10-24 实测：从回答完 3 个问题到出官网，用了 3 分半。',shot:'初稿在右侧预览',img:'assets/camp/a3-2.png'},
+    {t:'看首屏：你是谁、做什么、下一步点哪里，这三件事一眼能看到吗？下图 ① 是谁、② 做什么、③ 下一步点哪里。',shot:'首屏三件事',img:'assets/camp/a3-4.png'},
+    {t:'挑一处最不满意的，说清改哪、哪里不对、想改成什么样。一次只改一处，改完再说下一处。',shot:'改一处',img:['assets/camp/a3-5a.png','assets/camp/a3-5b.png']},
+    {t:'让它切到手机宽度看一遍，你自己也点一遍按钮：电话能拨、地址对、没有字挤在一起。其实它自己会先开浏览器按手机宽度看一遍，再告诉你检查过了。',shot:'手机宽度检查',img:['assets/camp/a3-6.png','assets/camp/a3-3.png']}],
+   pits:[
+    ['说「不好看」，它改了一堆还是不对','说具体点：哪个位置、哪里不对、想改成什么样，一次只改一处'],
+    ['页面上出现了我没给过的价格或评价','直接说「这条档案里没有，删掉」，它只能用档案里的事实'],
+    ['页面打开很慢','多半是图片太大，让它把图片压缩一下，加起来别超过 1MB'],
+    ['改着改着把之前好的地方也改没了','说「退回上一版」，再只改那一处'],
+    ['想加会员登录、在线支付','今天不做，记进课后清单'],
+    ['参考网站的内容被搬过来了','说「只学样子，内容全部换成我的档案」']],
+   done:['首屏一眼能看出：你是谁、做什么、下一步点哪里','页面上的价格、电话、地址和档案一致，没有编出来的内容','按你的意思改过至少一处','手机宽度打开不乱，按钮都点得动'],
+   notes:['时长 50 分钟：讲 5 分钟（先定给谁看、看完干什么，再定长什么样）→ 讲师演示 10 分钟 → 学员做 30 分钟（AI 出初稿单人实测 3 分半，30 人同时做会慢一些，其余时间改）→ 抽 1 人展示改前改后 5 分钟','讲这几句：「样子你说了算，事实档案说了算。」「说不出好看在哪，就拿一个你喜欢的网站来。」「一次只改一处。」','做法：Codex 照档案直接写单页网站，不套精装生成器，学员电脑不用装 Node。skill 里只留护栏：事实只从档案取、图片压缩、手机检查、按钮能点；小工具入口等下午做好了再加，不放空链接','常见：整节都在挑颜色 → 先把事实和主按钮做对，细调放到下午；学员说「要高大上」→ 追问是哪个网站、哪一点','对应结营 02：手机 4G 能打开（D2 上线后验）']}},
+  {id:'a4',no:'04',step:'3',t:'提前布局 GEO 搜索',poster:'提前布局 GEO 搜索 —— 让官网更容易进入 AI 搜索与推荐结果',fix:'现场能做到的是「内容做好、挂上官网」；被 AI 搜索收录和推荐要等几周，不当场保证；今天挂在 github.io 上是练手，国内的 AI 能不能读到没把握，要稳定被读到，课后迁到国内服务器并备案',do:'先问豆包、DeepSeek，截图留底 → 生成常见问答和品牌介绍 → 挂到官网上',who:'悦姐 + 柳',time:'11:20–12:00',body:{
+   quick:['说「下一步」，AI 先给你 3 个客户会问的问题','拿手机把这 3 个问题问一遍豆包、DeepSeek，截图留底','同时 AI 在写常见问答和一篇品牌介绍','核对答案，没依据的删掉','它挂到官网上，你手机看一眼'],
+   why:'以后越来越多客户不搜百度，直接问 AI：「XX 市哪家早茶适合带爸妈？」AI 回答时会去读网上的信息。你的信息越清楚、越像在回答客户的问题，越容易被它读懂、说对。GEO 就是做这件事：把客户会问的问题和有依据的答案写好，挂到你的官网上。先截一张「优化前」的图，以后才知道有没有变化。收录和推荐要等几周，今天做的是准备工作，不保证排名。',
+   say:['下一步。','截图放好了，在「GEO/优化前截图」里。','这条答案不对，我们周末不营业。','这个问题我们答不了，删掉，别放到网上。','把常见问答放到官网首页下面。','品牌介绍再短一点，三句话说清是谁、在哪、做什么。'],
+   steps:[
+    {t:'说「下一步」，它先照档案写 3 个客户会问 AI 的问题，比如「广州哪家早茶适合带爸妈」「XX 一般多少钱」「XX 提供哪些服务」。它会问你：等你截完图再继续，还是先继续、截图课后补。',shot:'3 个留底问题',img:'assets/camp/a4-1.png'},
+    {t:'拿出手机，把这 3 个问题分别问豆包和 DeepSeek，截图存进工作区的「GEO/优化前截图」（手机截图用微信「文件传输助手」发到电脑，再拖进去）。这是你的底，几周后再问一遍对比。',shot:'豆包的回答截图'},
+    {t:'你截图的时候，它在写两样东西：一份常见问答，每条答案都有档案依据；一篇品牌介绍，写清是谁、在哪、做什么、适合谁、怎么联系。',shot:'常见问答清单'},
+    {t:'你看一遍答案：不对的说哪里不对；没依据的让它删。宁可少，不要编。',shot:'核对答案'},
+    {t:'它把常见问答挂到官网上，并顺手做好给搜索引擎看的几样文件。网址先用占位的，明天上线后换成真的。',shot:'官网上的常见问答',img:'assets/camp/a4-5.png'},
+    {t:'手机宽度看一眼问答区，排版不乱就行。它还会写一份「分发清单」：品牌介绍以后可以发到哪些平台，课后你自己发。10-24 实测这一步用了 2 分 47 秒。',shot:'GEO 完成汇报',img:'assets/camp/a4-3.png'}],
+   pits:[
+    ['手机上没有豆包或 DeepSeek','用讲师大屏的截图，注明不是你自己问的；或者课后补'],
+    ['答案写得很好看，但我们其实做不到','删掉。答案只能写档案里有依据的'],
+    ['问答只有几条，凑不够','不用凑，有几条写几条；缺的资料记下来课后补'],
+    ['问了 AI 还是搜不到我们','正常。今天只是把内容准备好，上线后要等几周才可能被收录'],
+    ['官网首页被问答撑得很长','让它把问答做成点开才展开，或者单独放一页']],
+   done:['工作区「GEO/优化前截图」里有 3 个问题的截图','官网上挂了常见问答，每条都能在档案里找到依据','有一篇品牌介绍，三句话说得清你是谁','页面上没有「保证排名」「第一」这类说法'],
+   notes:['时长 40 分钟：悦姐主讲 GEO 是什么、为什么现在就要做；柳在大屏同步跑 skill，学员跟着跑','悦姐的接口：开讲前每人已有官网和企业档案；讲完每人有一个「GEO」文件夹（基线问题、优化前截图、常见问答、品牌介绍、分发清单）','讲这几句（建议，悦姐定）：「以后客户先问 AI，再找你。」「答案有依据，AI 才敢引用。」「今天是准备，不是保证排名。」','常见：学员要求写「广州第一」→ 不写，档案里没有出处；没截图 → 记「留底待验收（课后补截图）」，不影响往下做','实测发现：AI 出的 3 个留底问题都带了品牌名。讲师要提醒学员至少改 2 个不带品牌名的，例如「广州哪家早茶适合带爸妈」，这样才测得出客户还不知道你时，AI 会不会推荐你','对应结营 02：官网上有常见问答；有 GEO 优化前截图']}}]},
+ {id:'d1pm',icon:'1下',name:'D1 下午 · 做出能引流的钩子产品',full:'DAY 1 下午｜做出能引流的 AI 钩子产品',goal:'下午结束：一个能运行、能展示、能接流量的 AI 产品',items:[
+  {id:'b1',no:'01',t:'看懂什么是真正的 AI 钩子产品',poster:'看懂什么是真正的 AI 钩子产品 —— 找到用户愿意点击、体验和转发的产品切口',do:'讲：送客户一个好用的小东西，他用完顺手留个电话。3 个案例、5 种小工具类型',who:'柳',time:'13:30–13:50',body:{
+   quick:['记住一句话：送客户一个好用的小东西，他用完顺手留个电话','看 3 个案例','从 5 种类型里挑一种最适合你的','想好：你的客户最常问你哪一句'],
+   why:'客户不会因为你有官网就打电话，得先给他一个「用得上」的东西：算一下要花多少钱、测一下适合哪种、生成一份清单。他用完觉得有用，顺手就把电话留了。这就是钩子产品，跟「免费测肤」「9.9 元体验课」是一回事，只不过现在用 AI 一小时就能做出来。今天只做小的：一个人、一件事、一个结果，最后一步留电话。',
+   say:['我是做 XX 的，客户最常问我「……」。帮我想 3 个能送给客户的小工具，每个说清：谁用、用完得到什么、最后让他做什么。'],
+   exTitle:'3 个案例',
+   examples:[
+    {h:'① 餐饮 · 早茶聚餐预算助手（计算 / 报价）',rows:[['谁用','打算来聚餐的客户'],['问什么','几个人、什么场合、大厅还是包间'],['得到什么','建议点几套、大概花多少钱'],['最后','留电话订位']]},
+    {h:'② 教培 · 孩子该报哪个班（测评 / 诊断）',rows:[['谁用','孩子要报班的家长'],['问什么','几年级、现在大概多少分、每周能上几次'],['得到什么','推荐哪个班，附一句理由'],['最后','预约一节试听']]},
+    {h:'③ 工厂 · 询价单生成器（生成器）',rows:[['谁用','来询价的采购'],['问什么','要什么产品、规格、数量、交期'],['得到什么','一份整理好的询价单'],['最后','提交给业务员报价']]}],
+   steps:[
+    {t:'听讲师讲这一句：送客户一个好用的小东西，他用完顺手留个电话。'},
+    {t:'看上面 3 个案例：每个都只问 3 个问题，给一个结果，最后一步留电话。'},
+    {t:'认识 5 种类型：测评 / 诊断（测一下适合哪种）、计算 / 报价（算一下要多少钱）、生成器（生成一份清单或方案）、问答助手（常见问题随时问）、预约 / 登记（填个时间来店里）。'},
+    {t:'想一想：你的客户最常问你哪一句？在哪一步犹豫？那里就是你的钩子。'},
+    {t:'想不出来，就把「照着说」那句发给 Codex，让它帮你想 3 个，下一节挑一个做。'}],
+   pits:[
+    ['我想做会员系统、小程序商城','今天只做小的：一个人、一件事、一个结果。大需求记进课后清单'],
+    ['想不出客户会用什么','回想客户打电话最常问的第一句话，就从那句话做'],
+    ['担心结果不准，客户觉得被骗','结果只用档案里的价格和规则，页面写清「仅供参考，以实际为准」']],
+   done:['能用一句话说出钩子产品是什么','从 5 种类型里挑好了你要做的那一种','想好了客户最常问你的那句话'],
+   notes:['时长 20 分钟，以讲为主；最后几分钟让学员把「照着说」那句发给 Codex','3 个案例做成 3 页课件，每页放一张真页面截图；餐饮那个 10-05 实测做过','讲这几句：「先送，再要。」「一个人、一件事、一个结果。」「最后一步一定是留电话。」','对应结营 03 的前半段']}},
+  {id:'b2',no:'02',step:'4、5',t:'实战搭建自己的钩子产品',poster:'实战搭建自己的钩子产品 —— 从一个想法开始，现场做出可运行的产品原型',do:'AI 问 3 个问题，出说明书 → 你点头 → 生成小工具 → 复制飞书客户表模板，把表单接到最后一步 → 同桌扮顾客走一遍',who:'柳',time:'13:50–15:00',body:{
+   quick:['说「下一步」，告诉 AI 你要做什么小工具：谁用、用完得到什么、最后让他做什么','看它写的说明书，对了就说「行」','说「下一步」，等它生成小工具','复制飞书客户表模板，把表单链接发给它，接到最后一步','同桌当客户点一遍，你在旁边不许解释'],
+   why:'上一节想好了送什么，这一节真做出来。先写说明书再动手，是为了不跑偏：说明书写清谁用、问几个问题、给什么结果、最后去哪，你点了头 AI 才开工。做完让同桌当客户试，是因为你自己知道怎么点，客户不知道；他卡住的地方，就是要改的地方。',
+   say:['下一步。','给来聚餐的客户用，用完知道该点几套、大概花多少钱，最后留电话订位。','行。','这是我的客户表单链接：（粘贴链接），接到最后一步。','13 人以上别报价，提示打电话找店长。','结果页加一句「仅供参考，以门店实际为准」。'],
+   exTitle:'2 个操作示例',
+   examples:[
+    {h:'示例 1 · 餐饮 · 早茶聚餐预算助手（10-05、10-24 两次实测）',rows:[['你说的','谁用：打算来聚餐的客户；用完得到：该点几套、大概多少钱；最后：留电话订位'],['说明书','类型「计算 / 报价」；算法：每 2 人估 1 套、向上取整，乘以档案里的 168 元一套；9 人以上不报价，由门店确认'],['做出来的样子','选「5 人」→ 约需 3 套，参考 504 元，下面写明「课程演示估算，不是门店正式报价」'],['接表单','最后一步「复制订位摘要」「打开飞书客户表单」：客户把摘要粘进表单，再留姓名电话'],['实测','10-24 用 GPT-6 Luna：生成那一步用了 10 分 19 秒，它自己核对了 2–8 人的算法和手机、电脑两种宽度']]},
+    {h:'示例 2 · 教培 · 孩子该报哪个班（同样步骤设计，未实测）',rows:[
+     ['回答 3 个问题','谁用：孩子要报班的家长；用完得到：适合哪个班、为什么；最后：预约一节试听'],
+     ['说明书','类型「测评 / 诊断」；问 3 个问题：几年级、现在大概多少分、每周能上几次；班型和价格只用档案里的'],
+     ['预期样子','选「四年级、80 分左右、每周 2 次」→ 推荐提高班，附一句理由；档案里没有的班型不推荐，提示咨询老师'],
+     ['接表单','最后一步「预约试听」跳到飞书客户表单'],
+     ['注意','不写「保证提分」这类承诺；只问成绩和时间，不收孩子的身份信息']]}],
+   steps:[
+    {t:'说「下一步」。它可能先推荐一个方向（10-24 实测推荐的是「到店问答助手」）；不想要，就在卡片最下面自己写：谁用、用完得到什么、最后让他做什么，再点发送。',shot:'说出你要的小工具',img:'assets/camp/b2-1.png'},
+    {t:'它写好说明书（类型、问几个问题、结果长什么样、最后去哪），再把关键规则用选择题请你确认，例如「每 2 人估 1 套」。对了就选「按这个」，不对直接写。',shot:'确认算法',img:'assets/camp/b2-2.png'},
+    {t:'它会问客户表单从哪来。打开助教发的「客户表模板」，复制一份到自己的飞书，分享设成「获得链接的互联网用户都能填写」，把表单链接贴给它，说「接到最后一步」。',shot:'贴上客户表单链接',img:['assets/camp/b2-4.png','assets/camp/b2-4b.png']},
+    {t:'它开始生成小工具，10-24 实测用了 10 分钟左右，等的时候可以顺便休息。它会自己按手机和电脑两种宽度检查、核对算法，并在官网上加好入口。它不会替你提交表单，真提交留到明天上线后用手机验。',shot:'小工具做完的汇报',img:'assets/camp/b2-5.png'},
+    {t:'自己点一遍：选人数，点「计算套餐预算」。看结果对不对（下图 5 人 → 3 套、504 元）、有没有写明「不是正式报价」、最后能不能复制摘要、打开客户表单。',shot:'算出来的结果',img:'assets/camp/b2-3.png'},
+    {t:'换同桌当客户，从头点到尾。你在旁边看，不许解释；他卡住的地方，告诉 AI 改。',shot:'同桌互检'}],
+   pits:[
+    ['AI 问的问题太多，客户嫌烦','说「不影响结果的问题都删掉，最多 3 个」'],
+    ['结果里冒出档案里没有的价格','说「只用档案里的价格，没有的写请咨询」'],
+    ['点到最后没跳到表单','检查表单链接是不是复制完整了，让它重新接一遍'],
+    ['表单提交了，客户表里没看到','今天先不管，明天上线后用手机再验一次'],
+    ['同桌说看不懂结果','让 AI 把结果改成一句大白话加一个数字'],
+    ['想做成会员系统','缩成小版本，原需求记进课后清单'],['客户说表单打不开、填不了','表单分享设置改成「获得链接的互联网用户都能填写」']],
+   done:['说明书你点过头','小工具能从头点到尾，结果只用档案里的价格和规则','最后一步能跳到你自己的客户表单','同桌没靠你解释就用完了'],
+   notes:['时长 70 分钟：说明书 15 分钟 → 生成 25 分钟（AI 约 10–12 分钟，等的时候讲互检怎么做，也可以顺便休息）→ 接表单 10 分钟 → 同桌互检 15 分钟 → 收尾 5 分钟','课前：助教做好「客户表模板」，开课时发链接，学员复制一份到自己的飞书','讲这几句：「先写说明书，再动手。」「你会点不算，客户会点才算。」','对应结营 03：别人能用完，提交的信息进了客户表（真提交入库在 D2 上线后验）']}},
+  {id:'b3',no:'03',t:'接入真实 AI 能力',poster:'接入真实 AI 能力 API —— 实战接入生图 API、生视频 API 与更多 AI 功能',fix:'海报写「生图 API、生视频 API」。现场：图用 Codex 自带的直接生成；视频是给 Codex 装 ChatCut 插件，把照片剪成一条简单短视频（是剪辑，不是凭空生成视频）',do:'Codex 直接生成一张图 → 给 Codex 装上 ChatCut 插件 → 用照片和这张图剪一条 15 秒竖版短视频（字幕 + 音乐，不加复杂特效）→ 导出',who:'柳',time:'15:00–15:40',body:{verify:'ChatCut 这一段还没在我们的电脑上实测：装插件、登录、免费额度、中文字幕和导出下载，开课前讲师要走通一遍。官网给的英文安装口令是 /goal Read chatcut.io/chatgpt to install the ChatCut plugin and set up a new task for me.',
+   quick:['让 Codex 生成一张图：说清用在哪、什么风格','给 Codex 装 ChatCut 插件，第一次登录 ChatCut 账号','让它用你的照片和这张图，剪一条 15 秒竖版短视频','加字幕和音乐，导出，手机上看一遍'],
+   why:'AI 不只会聊天写字，还能直接出图、剪视频。这一节体验两样：图片，Codex 自己就能生成，不用另找工具；视频，给 Codex 装一个叫 ChatCut 的插件，它就会剪了。这就是「接入外部 AI 能力」：Codex 负责听你说话、拿主意，ChatCut 负责剪辑。以后想加别的能力也是这个路子：找到插件，装上，用嘴指挥。',
+   say:['给我的小工具首屏生成一张图：一桌早茶，暖色，不要文字，不要真人。','这张太花了，换个干净点的背景。','读一下 chatcut.io/chatgpt，帮我装上 ChatCut 插件。','用「资料」里的照片和刚才那张图，剪一条 15 秒的竖版短视频，配字幕和轻快的音乐，结尾放店名和电话。','字幕放大一点，音乐换个安静的。','导出成 MP4，告诉我文件在哪。'],
+   steps:[
+    {t:'对 Codex 说要什么图：用在哪（小工具首屏或官网），什么风格，不要文字、不要真人。Codex 自带生图，不用装别的，几十秒出一张（它可能一次多出几张让你挑）。',shot:'Codex 生成的图',img:'assets/camp/b3-1.png'},
+    {t:'不满意就说哪里不满意，再出一张。满意了让它压缩好，放进官网或小工具。10-24 实测：一张图约 2.6MB，Codex 往文件夹里存的时候碰到命令长度限制，只能一段段写，花了好几分钟。更快的办法：在对话里右键这张图，选「在资源管理器中打开」或「下载副本」，把图拖进工作区，再说「图在这里，压缩后放到小工具首屏」。',shot:'放进页面的效果和右键菜单',img:['assets/camp/b3-3.png','assets/camp/b3-2.png']},
+    {t:'装 ChatCut：在 ChatGPT 桌面版左边栏打开「插件」，搜 ChatCut，点安装；或者把「照着说」里那句发给 Codex，让它帮你装。第一次用要登录 ChatCut 账号（课前注册的免费版）。按 ChatCut 官网的说法，只有桌面版能装插件，网页版和手机版不行。',shot:'插件里找到 ChatCut',img:'assets/camp/b3-4.png'},
+    {t:'让它剪：用「资料」里的照片加刚才生成的图，15 秒竖版，配字幕和音乐，结尾放店名和电话。就这么简单，别加特效。',shot:'剪好的时间线'},
+    {t:'剪好以后可以接着用嘴改：字幕大小、音乐、图片顺序。',shot:'改字幕或音乐'},
+    {t:'导出 MP4，存进工作区，手机上播一遍。',shot:'手机上播放'}],
+   pits:[
+    ['图里出现乱码文字','说「图里不要任何文字」，字留到网页上再加'],['图生成了，好几分钟还没放进页面','图太大，Codex 正一段段往文件里写，可以等它。急的话右键图片选「在资源管理器中打开」，把图拖进工作区，再让它压缩后放进页面'],
+    ['生成的图像真人，或者像别人家的店','删掉重来。生成图只做氛围，不能冒充实拍'],
+    ['插件里搜不到 ChatCut','确认用的是 ChatGPT 桌面版；还不行叫助教'],
+    ['它说要花 ChatCut 积分，或要上传素材','先停下问助教，不要自己充值。按官网说明，免费版包含基础剪辑和导出（开课前讲师实测确认）'],
+    ['视频剪得太花、特效太多','说「只要照片轮播加字幕和音乐，别的都不要」'],
+    ['找不到导出的视频','让它告诉你文件在哪；还找不到，就在 ChatCut 网页上打开同一个项目导出']],
+   done:['官网或小工具里用上了一张 Codex 生成的图','剪出一条 15 秒左右的竖版短视频，手机能播','能说出「接入外部能力」是怎么回事：装插件、登录、用嘴指挥'],
+   notes:['10-24 实测（陶陶居演示）：生图加放进页面一共 9 分半，大部分时间花在把图存进文件夹；教学员右键「在资源管理器中打开」能省几分钟','时长 40 分钟：讲 5 分钟（AI 不只聊天，还能出图、剪视频；插件就是接入外部能力）→ 生图 10 分钟 → 装插件并剪视频 20 分钟 → 收尾 5 分钟','⚠ ChatCut 还没实测。装法、免费额度都来自 ChatCut 官网（2026-10-24 查）：免费版不用绑卡，含基础剪辑和导出、AI 字幕和音乐，网页导出累计 60 分钟。开课前必须在 ChatGPT 桌面版走通一遍，确认中文字幕、导出下载和免费额度','课前：每人注册 ChatCut 免费账号（课前准备 0.3）；讲师备一套演示素材','口径：ChatCut 要花积分、云端渲染、上传私有素材时会先问，助教统一说「先停一下，课上不充值」，实测免费版够不够之后再定口径','对应结营 04：用上了 Codex 生成的图；剪出一条短视频']}},
+  {id:'b4',no:'04',step:'8',t:'56 个岗位型 AI 军师',poster:'搭建 56 个岗位型 AI 军师模板 —— 销售、文案、运营、朋友圈等场景随时调用',do:'Codex 读档案写 3 段自家话术 → 打开 56 个岗位军师，挑一个复制到 Codex 用',who:'柳',time:'15:50–16:30',body:{
+   quick:['说「下一步」，Codex 读档案写 3 段自家话术：客户留了电话以后，第一句怎么说','在下面的 56 个军师里，找一个你最常用的','点「复制提示词」，粘贴到 Codex，把【】里的换成你的','看它交回来的结果，不满意就说哪里改'],
+   why:'客户留了电话，下一句说什么，决定这单成不成。这一节先让 Codex 照你的档案写 3 段自家话术，以后照着说。再给你 56 个「岗位军师」：销售、客服、文案、短视频、私域、店长、招聘、报价……每个军师只干一件具体的事，提示词都写好了，复制粘贴就能用。它们都先读你的企业档案，价格和优惠只用档案里的；规矩里写了不许编，万一编了，按下面「坑」里的办法处理。',
+   say:['下一步。','话术里加一段：客户说「我再考虑一下」怎么接。','叫嫌贵应对军师：客户说太贵了，产品是招牌套餐。','这句太客气了，改成我平时说话的口气：……'],
+   steps:[
+    {t:'说「下一步」。它先问你要哪几段，默认 3 段。10-24 实测默认是：小工具首次回访、问价后没下文、邀请老客回店，每段都有电话版和微信版。',shot:'选话术场景',img:'assets/camp/b4-1.png'},
+    {t:'它读企业档案写好话术。每段都是：开场白 → 客户最常见的 3 种回答怎么接 → 收尾 → 不要说什么。实测 1 分半左右。',shot:'写好的话术',img:'assets/camp/b4-2.png'},
+    {t:'念一遍，不像你说话的地方直接改，例如「这句太客气了，改成……」。'},
+    {t:'往下看「56 个岗位军师」，按分类找一个你最常用的，比如「嫌贵应对军师」。'},
+    {t:'点「复制提示词」，粘贴到 Codex，把【客户原话】【产品名】换成你的，发出去。'},
+    {t:'它先读档案，再按卡上的步骤干活，交回固定格式的结果，比如 3 个版本的回复。挑一个用，或者让它再改。也可以不复制，直接说「叫嫌贵应对军师」，实训营助手会自己去找这张卡。10-24 实测：说「叫嫌贵应对军师：客户说两个人 168 太贵了」，18 秒交回 3 个版本，价格只用了档案里的。',shot:'军师交回的结果',img:'assets/camp/b4-3.png'},
+    {t:'用顺手的军师，明天上午学了「举一反三」以后，可以存成你自己的 skill，再装给手机上的 AI 员工。'}],
+   pits:[
+    ['话术太书面，不像我说话','给它一段你平时真实说过的话，说「照这个口气改」'],
+    ['军师交回来的价格不对','它只能用档案里的价格；档案错了先改档案'],
+    ['卡上【】里的没换就发出去了','它会先问你要，按它问的补上就行'],
+    ['56 个太多，不知道用哪个','先用 3 个：首次回访、嫌贵应对、朋友圈文案']],
+   done:['3 段自家话术，念着顺口','用过一个军师，交回来的结果能直接用'],
+   junshi:true,
+   notes:['时长 40 分钟：话术 15 分钟 → 介绍军师库 5 分钟 → 学员挑一个用 15 分钟 → 收尾 5 分钟','56 个军师分 10 类：销售 8、客服与售后 7、文案 7、短视频与新媒体 8、私域与社群 6、店长与门店 6、招聘与人事 5、报价采购与经营分析 5、招商 2、教务 2。每张卡都先读企业档案、缺信息先问（最多 3 个问题）、交付格式写死，字数都在 350 以内','来源：部分参考 agency-agents-zh 和它的上游 agency-agents（都是 MIT 许可），署名放在 skill 包的「军师库-NOTICE」里；原来的 56 条开场白作为场景来源','提醒：简历初筛军师会碰到候选人的姓名和电话，课上提醒先删身份证号和住址','对应结营 05：3 段话术 + 用过一个军师']}},
+  {id:'b5',no:'05',step:'7',t:'完成第一个微信小程序',poster:'完成第一个微信小程序 —— 把产品接入微信生态，承接流量与用户',fix:'现场做的是测试号样品，只有自己能扫码打开；正式上架给客户用，课后约 2–4 周',do:'从 5 种小程序里挑一种最合你需求的（或说自己的需求，AI 先对照边界缩小）→ 生成 → 测试号 → 开发者工具预览 → 手机扫码打开',who:'柳',time:'16:30–17:30',body:{verify:'只有 ③（小工具搬进小程序）有现成骨架、测过代码；①②④⑤ 的骨架开课前要补齐并实测，手机扫码也要实测。',
+   quick:['从下面 5 种小程序里挑一种，复制那段话发给 Codex','5 种都不合适，就说你自己的需求，AI 会先对照边界帮你缩小','打开微信开发者工具，用测试号','扫码，在自己手机的微信里打开'],
+   why:'客户都在微信里，小程序就是你在微信里的一个小门面。做什么由你定，但今天有边界：只做一个小东西，不要登录、不要支付、不要后台。这样一小时内能做完，出了错也好改。今天做的是测试号样品，只有你自己能扫开；想给客户用，课后再走正式上架。',
+   say:['我要做第 1 种：门店名片。','我要做第 3 种：把下午那个小工具搬进小程序。','我想做一个……（说你的需求），先帮我对照今天的边界，看能做成哪种。','电话按钮点了没反应，帮我查一下。','标题改成我们的店名，颜色用官网那个主色。'],
+   exTitle:'5 种小程序，挑一种（复制那段话发给 Codex）',
+   examples:[
+    {h:'① 门店名片（内容最少，最容易做）',rows:[['做出来','店名、一句话介绍、3 张照片、营业时间；地址一点就导航，电话一点就拨打'],['照着说','帮我做一个门店名片小程序：店名、一句话介绍、3 张照片、营业时间，地址能一键导航，电话能一键拨打。内容只用企业档案里的。']]},
+    {h:'② 价目单',rows:[['做出来','产品和价格列表，点开看详情，底部一键拨号'],['照着说','帮我做一个价目单小程序：列出档案里的产品和价格，点开能看包含什么，底部一个「电话咨询」按钮。档案里没有价格的写「请咨询」。']]},
+    {h:'③ 小工具（下午那个搬进来）',rows:[['做出来','和网页版一样：问 3 个问题出结果，最后复制留资链接或一键拨号'],['照着说','把下午做的小工具做成小程序版：问题和结果跟网页版一致，最后一步改成「复制预约链接」和「一键拨号」。']]},
+    {h:'④ 常见问答',rows:[['做出来','客户最常问的问题，点开看答案；答不了的一键拨号'],['照着说','帮我做一个常见问答小程序：用档案里的常见问题和答案，点开展开，最下面放「还有问题？打电话问」按钮。']]},
+    {h:'⑤ 预约登记',rows:[['做出来','选服务、选日期时段、填称呼 → 生成一段预约信息，一键复制后发微信或拨电话'],['照着说','帮我做一个预约登记小程序：选服务、选日期和时段、填称呼，最后生成一段预约信息，能一键复制，旁边放一键拨号。不用真的提交到后台。'],['注意','测试号样品不接后台，信息不会自动进客户表，靠客户复制发给你']]}],
+   steps:[
+    {t:'看上面 5 种，挑一种最合你需求的，把「照着说」那段复制发给 Codex。拿不准就选 ①，内容最少。',shot:'选一种发给 Codex'},
+    {t:'自己的需求不在 5 种里，就直接说。AI 会先对照边界：要登录、支付、会员、后台的，它会帮你缩成能做的那一种，原需求记进课后清单。',shot:'AI 帮你缩小需求'},
+    {t:'等它生成。10-24 实测门店名片用了不到 2 分钟；档案里没有的营业时间，它写「待补」，没有拿示例资料凑。做好后它会停下来要「测试号 AppID」：这个要你本人用微信扫码申请（打开 developers.weixin.qq.com/sandbox），把 AppID 发给它。',shot:'小程序做好，等你给 AppID',img:'assets/camp/b5-1.png'},
+    {t:'打开微信开发者工具，用测试号导入它生成的「小程序」文件夹，左边模拟器能直接看。',shot:'开发者工具里的模拟器'},
+    {t:'点「预览」出二维码，用自己的微信扫，在手机上点一遍：电话能拨、地址能导航、文字没挤在一起。',shot:'手机上打开小程序'},{t:'下午收尾（17:30–18:00）：说「下一步」，AI 会先替你填好变现路径表初稿，晚上悦姐讲的时候直接在上面改。'}],
+   pits:[
+    ['想要在线支付、会员积分、商城','今天不做，测试号也做不了。缩成①或②，原需求记进课后清单'],
+    ['扫码打不开','确认扫码的微信和登录开发者工具的是同一个；还不行先用模拟器看，手机扫码课后补'],
+    ['想把网页直接塞进小程序','个人和测试号不能直接嵌网页，所以让 AI 照同样内容重做一份小程序版'],
+    ['电话或导航按钮点了没反应','模拟器里有些按钮不响应，以手机上为准；手机上也不行就让 AI 查'],
+    ['它做了 5 个页面，越做越大','说「只要一页，别的都删掉」']],
+   done:['自己的手机微信里能打开你的小程序','里面的价格、电话、地址和档案一致','电话或导航至少有一个能用','你能说出它是哪一种、为什么选这种'],
+   notes:['时长 60 分钟：讲 5 分钟（小程序是微信里的小门面；今天的边界）→ 选型 5 分钟 → 生成 20 分钟 → 开发者工具导入和手机扫码 20 分钟 → 收尾 10 分钟','边界（讲师开场就讲清）：只做一个小东西，最多 3 页；不登录、不支付、不做会员和后台；不收身份证等敏感信息；内容只从档案取；测试号样品只有自己能扫','skill 缺口：第 7 步现在只会做③（照说明书搬小工具），①②④⑤ 要补 4 套小程序骨架，开课前补好并实测','课前：每人微信开发者工具已扫码登录（课前准备 0.5）；助教备一份做好的①当兜底','对应结营 06：测试号手机扫码能打开']}}]},
+ {id:'d1ev',icon:'1晚',name:'D1 晚上 · 把钩子产品变成钱',full:'DAY 1 晚上｜把你的钩子产品变成钱（19:30–21:30，顺序和时长悦姐定）',goal:'晚上结束：产品不是做出来就结束，而是要让它成为你的生意入口',items:[
+  {id:'c1',no:'01',t:'拆解 AI 产品商业闭环',fix:'海报写「媛姐」，就是悦姐，海报定稿时改字',poster:'媛姐拆解 AI 产品商业闭环 —— 从「做出来」走到「有人用、有人买、能成交」',do:'悦姐讲，内容悦姐定',who:'悦姐',time:'悦姐定'},
+  {id:'c2',no:'02',step:'9',t:'设计钩子产品的变现路径',poster:'设计钩子产品的变现路径 —— 明确免费入口、付费产品、成交路径与后续交付',do:'下午收尾（17:30–18:00）AI 已替每人填好变现路径表初稿 → 晚上边听边改 → 讲完交表',who:'悦姐',time:'悦姐定',body:{
+   quick:['晚饭前说「下一步」，AI 替你填好变现路径表初稿','晚上边听悦姐讲，边在初稿上改','拿不准的格子留「待老板定」，讲完交表'],
+   why:'前面做的官网、小工具都是「免费入口」。客户进来以后，你靠什么赚钱、在哪成交、怎么交付、怎么定价，这张表把它写在一页纸上。初稿由 AI 照你的档案、小工具和话术先填好，你听悦姐讲的时候直接在上面改，不用对着白纸发呆。',
+   say:['下一步。','付费产品改成 XXX。','成交在微信里，我自己接。','定价那一栏先空着，我回去再想。','整理一下变现路径表，我要交了。'],
+   steps:[
+    {t:'下午收尾时说「下一步」。AI 照你的档案、小工具和话术，填好变现路径表初稿：免费用什么、付费买什么、在哪成交、怎么交付、怎么定价。',shot:'变现路径表初稿'},
+    {t:'晚上听悦姐讲，想到哪改到哪：在 Codex 里直接说「付费产品改成……」。'},
+    {t:'拿不准的格子留着「待老板定」，不硬填。'},
+    {t:'讲完说「整理一下变现路径表」，交给助教。'}],
+   pits:[['它填了一个我没有的产品','说「这个产品我们没有，删掉」；你想新加的产品和价格，直接告诉它'],['定价不知道写多少','先空着，标「待老板定」，回去想好再填']],
+   done:['5 栏都有内容或「待老板定」','价格来自档案或你亲口定的，没有 AI 编的','交了表'],
+   notes:['这一段的内容由悦姐定，这里只写学员手上要用的那张表','前置：D1 下午的小工具和话术已完成','对应结营 07']}},
+  {id:'c3',no:'03',t:'拆解 AI 增值新商业体系',poster:'拆解 AI 增值新商业体系 —— C 端引流 + B 端成交 + AI 体系持续增值',do:'悦姐讲，内容悦姐定',who:'悦姐',time:'悦姐定'},
+  {id:'c4',no:'04',t:'把 AI 能力包装成商业产品',poster:'把 AI 能力包装成商业产品 —— 让技术、内容、流量与成交真正连成一条线',do:'悦姐讲，内容悦姐定；柳讲 20 分钟案例',who:'悦姐 + 柳',time:'悦姐定'}]},
+ {id:'d2am',icon:'2上',name:'D2 上午 · 让 AI 进入手机和办公',full:'DAY 2 上午｜让 AI 进入你的手机和日常办公',goal:'上午结束：一个手机随时可调用的 AI 员工，并完成核心项目上线',items:[
+  {id:'e1',no:'01',step:'10',t:'手机控制 AI',poster:'用 DeepSeek 实现手机控制 AI —— 随时随地调用 AI、处理工作和项目任务',fix:'海报写 DeepSeek。实际用 Hermes（爱马仕），它的脑子用你的 ChatGPT 会员（和 Codex 同一个账号），不用 DeepSeek。电脑要开着，手机才指挥得动',do:'让 Codex 帮你装 Hermes → 用 ChatGPT 账号给它接上脑子 → 扫码接飞书或微信 → 设成只听你的、开机自动运行 → 手机发一句，电脑上的 AI 回你',who:'柳',time:'09:00–09:50',body:{verify:'Hermes 这一节还没在我们的电脑上从头走过：安装、接模型、扫码接飞书或微信、开机自启和手机回话，开课前讲师要实测并补截图。',
+   quick:['对 Codex 说「帮我装 Hermes（爱马仕）」，它替你跑安装命令，约 5 分钟','打开终端输入 hermes model，选「ChatGPT or Codex Subscription」，用你的 ChatGPT 账号登录','输入 hermes gateway setup，选飞书或微信，用手机扫码','设成只听你一个人的，再让它开机自动运行','手机上给它发一句「你好」，电脑上的 AI 回你，就通了'],
+   why:'Codex 很能干，但它在你的电脑上，你出门就用不了。Hermes（大家叫它爱马仕）是另一个装在你电脑上的 AI 程序，一直开着，替你守着飞书或微信：你在手机上发一句话，它在电脑上干活，再把结果发回手机。它的「脑子」用的还是你的 ChatGPT 会员（也就是 Codex 那个账号），不用另花钱、不用申请密钥。记住一条：电脑要开着、不能睡眠，手机才指挥得动。',
+   say:['帮我装 Hermes（爱马仕），装完告诉我下一步。','装好了，帮我检查一下 hermes 命令能不能用。','我要接飞书，下一步在终端里输入什么？','我要接微信，下一步在终端里输入什么？','设成只有我能指挥它，别人发消息不理。','让它开机自动运行，电脑重启也能用。'],
+   steps:[
+    {t:'在 Codex 里说「帮我装 Hermes」。它会在电脑上运行官方安装命令：Windows 是 iex (irm https://hermes-agent.nousresearch.com/install.ps1)，Mac 是官网上 curl 开头的那一行。大约 5 分钟。Hermes 自带独立的 Python，不影响你电脑上已有的软件。',shot:'Codex 正在装 Hermes'},
+    {t:'装好后打开一个新的终端窗口（不会开就问 Codex），输入 hermes model，在列表里选「ChatGPT or Codex Subscription」。屏幕上出现一个网址和一串验证码：用浏览器打开网址，输入验证码，登录你的 ChatGPT 账号。',shot:'选 ChatGPT or Codex Subscription'},
+    {t:'输入 hermes，跟它打个招呼。它能回话，说明脑子接好了。',shot:'终端里第一次对话'},
+    {t:'输入 hermes gateway setup，选平台。选飞书：用飞书手机 App 扫屏幕上的二维码，它会自动帮你建好机器人。选微信：用微信扫码，在手机上确认；之后你是给一个「机器人号」发消息，不是你自己的微信号。',shot:'扫码接飞书或微信'},
+    {t:'设成只听你一个人的：让 Codex 帮你把自己加进允许名单（飞书是 FEISHU_ALLOWED_USERS，微信是 WEIXIN_ALLOWED_USERS）。不设的话，谁找到这个机器人都能指挥你的电脑。',shot:'允许名单设好'},
+    {t:'输入 hermes gateway install，让它开机自动运行（Windows 会注册成计划任务），再输入 hermes gateway status，看到在运行就行。顺手把电脑设成插电时不睡眠：Windows 在 设置 → 系统 → 电源（笔记本叫「电源和电池」），把插电时的「睡眠」改成从不，屏幕照常关没关系；Mac 在 电池 → 选项 里打开「防止自动进入睡眠」。',shot:'gateway 运行中'},
+    {t:'拿起手机，在飞书或微信里给机器人发「你好，你是谁」。电脑上的 AI 回你了，就通了。',shot:'手机上收到回复'}],
+   pits:[
+    ['安装卡住或报网络错误','换讲师热点再装一次；还不行举手，助教帮你装'],
+    ['终端里找不到 hermes 命令','关掉终端重新开一个；还不行让 Codex 查一下装到哪了'],
+    ['验证码过期了','重新输入 hermes model，用新的验证码'],
+    ['飞书扫码后没反应','确认手机飞书登录的是你自己的账号；还不行，助教按官方文档手动建应用'],
+    ['终端里的二维码显示成乱码','用二维码上方那个网址在浏览器里打开，再扫'],
+    ['手机发消息没回复','先看电脑有没有睡眠；再输入 hermes gateway status，没在运行就输入 hermes gateway start'],
+    ['微信机器人拉不进群','正常，微信这种机器人基本只能私聊；要在群里用就选飞书'],['用公司的飞书扫码，提示要管理员审批','公司飞书建机器人要管理员同意；课上先用自己注册的个人飞书'],['你电脑上本来就装过 Hermes、正在用，Codex 说要修复或重装','先停下叫助教，别让它修。那可能是你在用的另一套，修了会影响原来的设置（10-24 实测就碰到过）']],
+   done:['手机上给它发一句，电脑上的 AI 回你了','只有你自己能指挥它，允许名单设好了','已设开机自动运行（Windows 要登录进系统后才会启动，设了开机密码的电脑开机后要先登录）'],
+   notes:['时长 50 分钟：讲 5 分钟（Hermes 是什么、为什么电脑要开着）→ 安装 10 分钟 → 接模型 10 分钟 → 接飞书或微信 15 分钟 → 手机验证 10 分钟','依据 Hermes 官方文档（2026-10-24 查）：Windows 原生 PowerShell 可装，官网另有桌面版安装包；模型用 hermes model 选 ChatGPT or Codex Subscription，验证码登录；飞书推荐扫码自动建应用，手动建应用是兜底；微信走腾讯官方 iLink 机器人，基本只能私聊，默认谁都能发消息，必须设允许名单','⚠ 还没在我们的电脑上实测，截图也还没有。开课前在讲师电脑走一遍，截自己的图替换截图位。飞书官网、CSDN 上的教程只作参考，它们的截图不直接搬','建议默认接飞书：能扫码自动建机器人、能进群；微信只能私聊','现场装的风险：30 人同时下载会慢。装机会先确认能打开 Hermes 官网；现场备讲师热点','skill 缺口：第 10 步还写着旧命令 hermes auth add openai-codex，要改成 hermes model，并补「设允许名单」和「Codex 代装」','对应结营 08 的前半段']}},
+  {id:'e2',no:'02',step:'10',t:'搭建一个协助办公的 AI 员工',poster:'搭建一个协助办公的 AI 员工 —— 让 AI 帮助整理信息、执行任务与推进工作',do:'接着上一节：Codex 把企业档案和话术整理成员工手册，装进 Hermes → 手机上问一句价格，答对就算上岗',who:'柳',time:'09:50–10:20',body:{verify:'员工手册装进 Hermes、手机上问价答对，这条链路还没实测。',
+   quick:['接着上一节：手机已经能指挥电脑上的 Hermes','在 Codex 里说「下一步」，它把企业档案和话术整理成一本员工手册，做成 Hermes 能用的 skill','它把这个 skill 装进 Hermes，你重启一下 Hermes','手机上问它一句价格，答对就算上岗','再让它写一条朋友圈，看口气对不对'],
+   why:'上一节接通的 Hermes 只是个「新来的」，不认识你的公司。这一节给它一本员工手册：公司是谁、价格多少、常见问题怎么答、跟客户怎么说话、什么不能乱说，都从企业档案和第一天写的话术里来。装上以后，你在手机上问它，它就按你家的口径回答；答不了的，按规矩它会说「我请老板回复您」；万一它编了，按下面「坑」里的办法处理。',
+   say:['下一步。','把员工手册装到 Hermes 里。','（手机上）我们的招牌套餐多少钱？','（手机上）帮我写一条邀请老客户回店的朋友圈。','（手机上）按员工手册回答。','员工手册里的价格改成 XXX 元，再装一次。'],
+   steps:[
+    {t:'先确认上一节已经通了：手机发一句，电脑回你。没通先回上一节。'},
+    {t:'在 Codex 里说「下一步」。它会读企业档案和第一天写的 3 段话术，写出一本「员工手册」：公司是谁、价格表、常见问题和答案、3 段话术、规矩（不编价格，答不了就说「我请老板回复您」）。',shot:'员工手册'},
+    {t:'看一遍员工手册，价格和档案对得上就说「行」。',shot:'核对员工手册'},
+    {t:'它把员工手册做成 Hermes 能用的 skill，复制到 Hermes 的 skill 文件夹，再让你重启 Hermes（终端里输入 hermes gateway stop，再输入 hermes gateway start，也可以让它替你执行）。',shot:'技能装进 Hermes'},
+    {t:'手机上问一句价格，例如「招牌套餐多少钱」。答对了，说明它真的读了员工手册。',shot:'手机上答对价格'},
+    {t:'再让它写一条朋友圈。口气不对，就在手机上直接说「语气再亲切一点」。',shot:'朋友圈文案'}],
+   pits:[
+    ['手机上问价格，它答错了或者说不知道','手机上说「按员工手册回答」；还错，就回 Codex 检查技能装进去没有、Hermes 重启没有'],
+    ['它编了一个优惠','在 Codex 里说「员工手册加一条：档案里没有的优惠一律不说」，再装一次'],
+    ['改了价格，它还按旧的说','改完档案后，让 Codex 重新生成员工手册、重新装进 Hermes，再重启'],
+    ['客户也能找到这个机器人吗','现在只听你一个人的（上一节设了允许名单）。要不要让客户直接问它，课后再决定']],
+   done:['手机上问价格，它答对了','让它写的朋友圈，口径和你家一致，没有编出来的优惠','你知道改了档案以后，怎么让它跟着更新'],
+   notes:['时长 30 分钟：讲 3 分钟 → 生成员工手册 10 分钟 → 装进 Hermes 并重启 7 分钟 → 手机测试 10 分钟','前置：D2 上午 01 已接通；D1 下午 04 已写好话术','讲这几句：「它是新员工，得先给它员工手册。」「答不了就说请老板回复，比乱答强。」','对应 skill 第 10 步，模板是员工手册模板和 hermes 员工 skill 模板；Hermes 的 skill 文件夹是 ~/.hermes/skills/','⚠ 未实测：员工手册装进 Hermes、手机问价答对，这条链路还没走过','对应结营 08：手机上问价格答对']}},
+  {id:'e3',no:'03',step:'11、12',t:'掌握举一反三的 AI 应用方法',poster:'掌握举一反三的 AI 应用方法 —— 不止会使用一个工具，而是学会自己解决问题',do:'教它干一件常干的小事，一句一句指导到对 → 固化成自己的 skill → 新开对话换一份资料再跑 → 装给 AI 员工，手机一句话触发。方法讲解链到「AI 入门」频道的第 2、4、5 关',who:'柳',time:'10:30–11:30',body:{verify:'手机上一句话触发 skill 这一步还没实测，要先走通 01、02。',
+   quick:['接着上一节：AI 员工已经上岗，能答价格','挑一件你常干的小事（默认：整理今天的新客户），在 Codex 里一句一句教它，教到对','说「把刚才这件事固化成我的 skill」','新开一个对话，换一份资料再跑一遍，对了才算固化成功','把这个 skill 装给 AI 员工，手机上说一句，电脑自己干完'],
+   why:'前面都是我们帮你搭好的，这一节学的是方法，以后你自己就会。方法就三步：先手把手教 AI 干一件事，教到对；再把你教的做法存下来，这就是 skill；最后换一份资料再试，还对，才算它真学会了。装给手机上的 AI 员工以后，你出门在外说一句，它就照着干。会了这一招，以后任何反复干的活，都能这样交出去。背后的道理，「AI 入门」频道的第 2、4、5 关（指挥它改、立规矩、验收）里讲了。',
+   say:['下一步。','我常干的事是：整理今天的新客户，列出要回访的人和每人一句开场白。','不对，月饼礼盒 5 盒以上的算重要客户。','开场白要带客户的称呼，后半句按他的需求写。','把刚才这件事固化成我的 skill，名字叫「今日回访名单」。','（新对话里）今日回访名单，用这份新的客户表。','把这个 skill 装给 AI 员工。','（手机上）今日回访名单。'],
+   exTitle:'5 件可以练的小事，挑一件',
+   examples:[
+    {h:'① 通用 · 整理今天的新客户（默认）',rows:[['给它什么','客户表导出的表格（没有就用示例表）'],['标准结果','今天要回访的名单：姓名、电话、需求、每人一句开场白']]},
+    {h:'② 美业 / 门店 · 明天的到店提醒',rows:[['给它什么','预约记录（截图或表格）'],['标准结果','明天到店名单，每人一条提醒消息']]},
+    {h:'③ 工厂 / 贸易 · 询价整理成报价单',rows:[['给它什么','一段询价聊天记录'],['标准结果','一份标准报价单：品名、规格、数量、单价、交期；单价只用价目表，交期没有就写待确认']]},
+    {h:'④ 教培 · 课后反馈变家长周报',rows:[['给它什么','老师写的几句课堂记录'],['标准结果','一份给家长的周报：学了什么、表现、下周重点、家长怎么配合']]},
+    {h:'⑤ 通用 · 语音变待办',rows:[['给它什么','老板的一段语音（转成文字）'],['标准结果','待办清单：谁、做什么、哪天之前；没说截止时间的标待定']]}],
+   steps:[
+    {t:'先确认上一节已经上岗：手机问价能答对。'},
+    {t:'从上面 5 件小事里挑一件，默认「整理今天的新客户」，用课上发的示例客户表（你自己的客户表这时只有几条测试记录，练不出东西）。在 Codex 里说「下一步」，再说清你要它干什么。',shot:'说清要干的事'},
+    {t:'它做出第一版。你看哪里不对，一次指一处，例如「月饼礼盒 5 盒以上算重要客户」。教到你满意为止，它会把你纠正的地方都记下来。',shot:'第一版和你的纠正'},
+    {t:'说「把刚才这件事固化成我的 skill」，给它起个名字。它会写一份 skill，把你纠正过的规矩都写进去。',shot:'skill 文件'},
+    {t:'新开一个对话，只说 skill 的名字，再给一份新的客户表。它照着规矩做对了，才算固化成功；不对就回去补规矩。',shot:'新对话里跑对'},
+    {t:'说「把这个 skill 装给 AI 员工」，它复制到 Hermes 的 skill 文件夹，并提醒你重启 Hermes。',shot:'装给 AI 员工'},
+    {t:'手机上发「今日回访名单」，电脑自己干完，把结果发回你手机。',shot:'手机收到名单'}],
+   pits:[
+    ['挑的事太大，比如「帮我做经营分析」','缩成一件十分钟能干完的小事，输入只有一份资料'],
+    ['新对话里它不照你的规矩做','回到固化那一步，让它把你纠正过的点写进 skill 的规矩里，再试'],
+    ['手机上说了没反应','先确认 skill 已经装进 Hermes 并重启了；再用 01 节的方法查 Hermes 在不在运行'],
+    ['不想拿客户的真实信息练','先用示例客户表练，课后再换真的'],
+    ['担心它把客户信息发出去','skill 里加一条规矩：只整理，不发送、不登录别的系统']],
+   done:['有一份你认可的标准结果','新开对话、换一份资料，skill 也能跑对','手机上说一句，电脑把那件事干完，结果发回手机'],
+   notes:['时长 60 分钟：讲 5 分钟（三步方法：先教、再存、换资料再试）→ 教它干活 20 分钟 → 固化 10 分钟 → 换资料复测 10 分钟 → 装给 AI 员工、手机触发 15 分钟','前置：D2 上午 02 已上岗；客户表能导出（D1 下午 02 建的）','10-05 命令行实测：默认例子从初稿、纠正到固化都走通了，换第二份客户表重跑正确；手机触发等 Hermes 实测后补','讲这几句：「先教，再存，换资料再试。」「教到你满意，它才学得会。」「会了这一招，什么活都能交出去。」','方法讲解链到「AI 入门」频道：第 2 关指挥它改、第 4 关立规矩、第 5 关验收（第 5 关的卡还在补）','对应结营 08 后半段（手机一句话干完）和「送：自己的 skill」']}},
+  {id:'e4',no:'04',step:'6',t:'实战部署并上线自己的项目',poster:'实战部署并上线自己的项目 —— 完成核心项目部署上线，并掌握后续复制方法',do:'官网和小工具（网页版）发布到 GitHub → 手机关 Wi-Fi 用 4G 打开 → 走一遍小工具并提交 → 客户表里看到这条 → 学会改了内容怎么重新发布。小程序不发布，测试号预览就够',who:'柳',time:'11:30–12:10',body:{
+   quick:['接着前面：官网和小工具都在你电脑上做好了','对 Codex 说「下一步」，它把官网和小工具发布到 GitHub，给你一个网址','手机关掉 Wi-Fi，用 4G 打开这个网址','走一遍小工具，提交一次，去客户表里看到这条','改一句文案，让它再发布一次，学会以后怎么更新'],
+   why:'前面做的东西都还在你自己电脑上，客户看不到。这一节把官网和小工具发到网上，拿到一个手机能打开的网址，可以发给客户、做成二维码（在微信里能不能直接打开，开课前实测）。用的是 GitHub 的免费网页空间：不花钱、不用买服务器、不用备案。小程序只做到测试号，不发布：正式上架要认证、审核、备案，成本高，课后真有需要再做。自己的域名也放到课后。',
+   say:['下一步。','网址发我，我用手机试一下。','招牌套餐改成 178 元，同步到官网，再发布一次。','我 GitHub 上已经有个人网站了，别动它。','手机打不开，帮我查一下。'],
+   steps:[
+    {t:'确认课前已经登录 GitHub 工具（课前准备 0.4）。没登录就请助教。'},
+    {t:'说「下一步」。它先查你 GitHub 上有没有个人网站：有就另建一个新的，不动原来的；万一它要动原来的，马上点停止。然后把官网和小工具放进「发布」文件夹，只放网页要用的文件，企业档案、客户表不会传上去。',shot:'准备发布'},
+    {t:'它推到 GitHub 并打开网页功能，等 1–3 分钟，给你一个网址，长这样：https://你的用户名.github.io/品牌名/',shot:'拿到网址'},
+    {t:'手机关掉 Wi-Fi，用 4G 打开网址：首页能看、按钮能点、图片不慢。',shot:'手机 4G 打开官网'},
+    {t:'点进小工具走一遍，最后提交表单，名字写「测试」开头。然后打开飞书客户表，看到这一条就通了。',shot:'客户表里的测试记录'},
+    {t:'学会更新：改档案里一项信息，例如「招牌套餐改成 178 元」，再说「把这个改动同步到官网，再发布一次」。过一两分钟刷新网址，手机上能看到新价格。以后改价格、换照片，都是这一句话。',shot:'改完重新发布'}],
+   pits:[
+    ['它说 GitHub 没登录','助教在旁边指导，登录和授权都由你本人点'],
+    ['等了 5 分钟还打不开','让它查一下网页功能开了没有；网址末尾要带「/品牌名/」'],
+    ['它要动你原来的个人网站','马上点停止，跟它说「别动原来的，另建一个」，并叫助教'],
+    ['手机 4G 打不开 github.io','换一家运营商的网络再试；还不行，用主办方的备用服务器'],
+    ['客户表里没看到提交的那条','检查小工具最后一步的表单链接，是不是你自己那份'],
+    ['想用自己的域名','课后再绑，课后操作文档里有']],
+   done:['手机关 Wi-Fi，用 4G 能打开你的官网和小工具','从小工具提交的一条测试信息，出现在你的飞书客户表里','改了档案里的一个价格，同步到官网并重新发布，手机上看到了新价格'],
+   notes:['时长 40 分钟：讲 3 分钟 → 发布 10 分钟 → 手机 4G 验证 10 分钟 → 表单提交验证 7 分钟 → 学会更新 10 分钟','前置：课前 GitHub 已登录；官网、小工具做完；客户表单已接上','10-05 实测：命令行和桌面版都发布成功。当时发现「会强推覆盖已有个人网站」的隐患，skill 已改成另建，个人网站没被动','小程序不发布：测试号预览即可，正式上架放课后（认证、审核、备案成本高）','兜底：GitHub 推不上去的，用主办方服务器二级域名','对应结营 02（手机 4G 能打开）和 03（提交进了客户表）']}}]},
+ {id:'d2pm',icon:'2下',name:'D2 下午 · 企业工作流与数字人',full:'DAY 2 下午｜企业 AI 工作流与数字人实战',goal:'下午结束：一个真实、有内容、具备流量潜力的数字人作品',items:[
+  {id:'f1',no:'01',step:'14',t:'感受完整的企业 AI 工作流',poster:'感受完整的企业 AI 工作流 —— 打通选题、文案、内容生产与投流分析',fix:'投流分析现场不做',do:'先看讲师 10 分钟跑完整条链（看数据 → 选题 → 口播稿 → 数字人 → 剪辑 → 封面）→ 自己跑前半段：照档案出 7 个选题 → 挑 1 个写 60 秒口播稿 → Codex 出封面。口播稿留给下午数字人拍摄用',who:'柳 + 悦姐',time:'13:30–14:10',body:{
+   quick:['看讲师 10 分钟把整条链跑一遍：看数据 → 选题 → 口播稿 → 数字人 → 剪辑 → 封面','说「下一步」，照你的档案出 7 个选题','挑 1 个，让它写成 60 秒口播稿','让 Codex 出一张竖版封面','口播稿留着，下午拍数字人用'],
+   why:'前面一天半做的是「门面」和「工具」，这一节看 AI 怎么进内容生产：一条短视频从想选题到出成片，中间每一步都能交给 AI，你只管拍板。先完整看一遍全貌，再自己跑前半段：选题、口播稿、封面。口播稿就是下午拍数字人时你要念的那段，封面就是这条视频的封面。',
+   say:['下一步。','照我的档案出 7 个选题，每个说清为什么拍、开头 3 秒说什么。','我选第 2 个，写成 60 秒口播稿，口气像跟熟客聊天。','这段太书面了，改得口语一点。','给这条视频出一张竖版封面，不要文字。'],
+   steps:[
+    {t:'先看讲师大屏：讲师提前跑好一条完整的链，10 分钟放给你看。看数据、选题、口播稿、数字人、ChatCut 剪辑、封面，每一步 AI 干了什么、老板拍了什么板。',shot:'全流程一页图'},
+    {t:'说「下一步」，它照你的企业档案出 7 个选题，每个写清为什么拍、开头 3 秒说什么。',shot:'7 个选题'},
+    {t:'挑一个最想拍的，告诉它编号。它写一段 60 秒左右的口播稿，事实只用档案里的。',shot:'口播稿'},
+    {t:'自己念一遍。哪句拗口、哪句太书面，直接说改哪一句。'},
+    {t:'让它出一张竖版封面：不放字，标题后期再加。',shot:'竖版封面'},
+    {t:'口播稿和封面都存在工作区的「内容」文件夹，下午拍数字人直接用。'}],
+   pits:[
+    ['它出的选题很空，像别人家的','说「只用我档案里的产品和客户常问的问题出选题」'],
+    ['口播稿里有档案没有的优惠','删掉，再说「不许写档案里没有的优惠和承诺」'],
+    ['稿子太长，念起来超过 1 分钟','说「压到 250 字左右」'],
+    ['封面里出现乱码文字','说「封面不要任何文字」']],
+   done:['手里有 7 个选题，挑定了 1 个','一段你自己念着顺口的 60 秒口播稿','一张竖版封面'],
+   notes:['时长 40 分钟：讲师演示全链 10 分钟 → 选题 10 分钟 → 口播稿 12 分钟 → 封面 5 分钟 → 收尾 3 分钟','讲师演示素材提前一天跑好：同一个演示公司，从数据到成片每一步留截图或录屏','10-05 命令行实测：7 个选题 → 选 2 号 → 257 字口播稿 + 9:16 封面；新开对话也能接着做','对应结营 09：一篇口播稿']}},
+  {id:'f2',no:'02',step:'13',t:'搭建自己的 AI 分析助手',poster:'搭建自己的 AI 分析助手 —— 辅助分析账号、用户、选题与短视频内容方向',do:'导出账号数据 → AI 出分析 → 回头看上一节的选题对不对路 → 用上午的方法固化成「每周复盘」skill。没有账号用示例数据，写明不是你的结论',who:'柳',time:'14:10–14:50',body:{verify:'「固化成每周复盘 skill」这一步还没实测。',
+   quick:['从抖音、视频号或小红书后台导出近 30 天数据（没有账号就用示例数据）','说「下一步」，AI 出一份分析：3 个发现，每个带数字','回头看上一节的选题，数据支不支持','用上午的方法，把「看数据」固化成你的「每周复盘」skill','新开对话换一份数据跑对；装给 AI 员工后，手机上说一句也能出'],
+   why:'大多数老板发视频凭感觉：想发什么发什么，发完也不看数据。这一节让 AI 帮你看：哪类内容播放高、哪条互动好、什么时间发效果好。更要紧的是，用上午学的方法，把「看数据」存成你自己的「每周复盘」skill，以后每周导一次数据，说一句话就出报告。没有账号的用示例数据练方法，但示例得出的结论不是你的结论。',
+   say:['下一步。','这是我导出的数据：（把文件拖进来）','这个发现能不能具体点，是哪几条视频？','照这个分析，上一节的选题要不要换？','把刚才的分析固化成我的 skill，名字叫「每周复盘」。','（新对话里）每周复盘，用这份新的数据。'],
+   steps:[
+    {t:'导出数据：抖音、视频号、小红书的创作者后台都能导出作品数据表。不会导就问助教；没有账号就用课上发的示例数据。'},
+    {t:'把数据文件拖进工作区的「内容」文件夹，说「下一步」。'},
+    {t:'它出一份分析：一句话结论加 3 个发现，每个都带数字，例如「晚间发的平均播放最高」。用示例数据时，它会写明「这不是你真实账号的结论」。',shot:'分析报告'},
+    {t:'回头看上一节的选题：数据支不支持？不支持就换一个，或者把这条当成一次测试。'},
+    {t:'说「把刚才的分析固化成我的 skill，名字叫每周复盘」。和上午一样，它会把你认可的分析方法写成 skill。',shot:'每周复盘 skill'},
+    {t:'新开对话，说「每周复盘」，再给它一份数据。它照样出报告，才算固化成功。想在手机上用，就让它装给 AI 员工。',shot:'新对话里出报告'}],
+   pits:[
+    ['导不出数据','先用示例数据练方法，课后助教教你导'],
+    ['数据太少，只有几条','样本太少别下结论，让它写「仅供参考，继续观察」'],
+    ['它把「可能的原因」说成了肯定的结论','说「分开写：数据看到了什么、可能为什么、下次怎么验证」'],
+    ['新对话里报告格式变了','回到固化那一步，让它把输出格式写死在 skill 里']],
+   done:['一份带数字的分析；用示例数据的写明了不是你的结论','一个你自己的「每周复盘」skill，换一份数据也能跑对','你知道下周回去怎么用：导数据，说一句话'],
+   notes:['时长 40 分钟：讲 3 分钟 → 导数据 7 分钟 → 出分析 10 分钟 → 对照选题 5 分钟 → 固化并复测 15 分钟','这是当天第二次练「举一反三」，讲师要点破：「上午那三步，这里又用了一遍」','茶歇：请悦姐在 14:50 数字人开始前后排 10 分钟','10-05 命令行实测：8 条示例数据，分析带数字、写明不是真实结论，约 5.5 分钟；「固化成每周复盘 skill」还没实测','skill 缺口：第 13 步要补「固化成每周复盘 skill」的引导','对应结营 09：一份账号分析']}},
+  {id:'f3',no:'03',t:'数字人带练',fix:'海报写「媛姐」，就是悦姐，海报定稿时改字',poster:'媛姐带练数字人应用 —— 从数字人逻辑到现场实操，提升短视频生产效率',do:'悦姐带练，内容悦姐定',who:'悦姐',time:'14:50–17:00（03、04 同时进行，悦姐定）'},
+  {id:'f4',no:'04',t:'现场完成数字人拍摄与制作',poster:'现场完成数字人拍摄与制作 —— 把真实人设、内容表达和 AI 能力结合起来',do:'3 个拍摄位轮流拍，用 01 写好的口播稿；排队的人先补做前面没完成的节',who:'悦姐',time:'14:50–17:00（03、04 同时进行，悦姐定）'}]},
+ {id:'end',icon:'结',name:'结营 · 9 项成果打勾',full:'结营｜9 项成果逐项打勾（17:00–17:30）',goal:'每人对着自己的工作区逐项打勾，再定一件回去 7 天内要用 AI 干的事（写在工作区「进度.md」最后：哪天、用哪个 skill、干什么）',items:[
+  {id:'g1',no:'01',t:'一个懂你的 Codex + 知识库',poster:'一个懂你的 Codex + 知识库 —— 掌握安装、更新、升级与持续使用路径',do:'打勾标准：能答对自家价格；改档案里一项信息（如价格），让 AI 同步到官网并重新发布，手机上看到新值；知道以后怎么升级 Codex',who:'助教'},
+  {id:'g2',no:'02',t:'自己的企业官网',poster:'自己的企业官网 —— 为产品和业务建立独立展示入口，并提前布局 GEO',do:'打勾标准：手机 4G 能打开；官网上有常见问答；有 GEO 优化前截图',who:'助教'},
+  {id:'g3',no:'03',t:'能运行的 AI 钩子产品',poster:'能运行的 AI 钩子产品 —— 从想法到产品原型，能够展示、体验和承接流量',do:'打勾标准：别人能用完，提交的信息进了自己的客户表',who:'助教'},
+  {id:'g4',no:'04',t:'真实 AI 能力接入经验',fix:'海报写「生图 API、生视频 API」。实际：Codex 自带生图 + ChatCut 插件剪视频（是剪辑，不是凭空生成视频）',poster:'真实 AI 能力接入经验 —— 实战接入生图 API、生视频 API 与更多 AI 功能',do:'打勾标准：官网或小工具里用上了 Codex 现场生成的图；用 ChatCut 剪出一条短视频',who:'助教'},
+  {id:'g5',no:'05',t:'56 个岗位型 AI 军师模板',poster:'56 个岗位型 AI 军师模板 —— 覆盖销售、文案、运营、朋友圈等企业场景',do:'打勾标准：3 段自家话术写好；现场用过一个军师，交回来的结果能直接用',who:'助教'},
+  {id:'g6',no:'06',t:'一个微信小程序',fix:'现场做的是测试号样品，只有自己能扫码打开；正式上架课后约 2–4 周',poster:'一个微信小程序 —— 把 AI 产品接入微信生态，承接流量与用户',do:'打勾标准：测试号手机扫码能打开',who:'助教'},
+  {id:'g7',no:'07',t:'一条 AI 产品商业闭环',poster:'一条 AI 产品商业闭环 —— 明确免费入口、付费产品、成交路径与后续交付',do:'打勾标准：交了变现路径表',who:'助教'},
+  {id:'g8',no:'08',t:'手机可调用的 AI 员工',poster:'手机可调用的 AI 员工 —— 辅助整理信息、执行任务与推进日常工作',do:'打勾标准：手机上问价格答对；手机上说一句，它把固化好的那件事干完',who:'助教'},
+  {id:'g9',no:'09',t:'企业 AI 工作流 + 数字人作品',poster:'企业 AI 工作流 + 数字人作品 —— 打通内容生产链路，并完成真实数字人作品',do:'打勾标准：一份账号分析 + 一篇口播稿 + 一条数字人成片',who:'助教'},
+  {id:'g10',no:'送',t:'自己的 skill',fix:'海报上没写，属于额外送的',do:'打勾标准：新开对话、换一份资料，也能跑对',who:'助教'}]},
+ {id:'after',icon:'后',name:'课后',full:'课后｜6 份操作文档 + 助教一对一跟进',goal:'回去自己能接着用，卡住了有地方查、有人问',items:[
+  {id:'h1',t:'小程序正式上架',do:'从测试号样品到正式上架，约 2–4 周',who:'助教跟进'},
+  {id:'h2',t:'绑定自己的域名',do:'把 github.io 地址换成自己的域名',who:'助教跟进'},
+  {id:'h3',t:'迁到国内服务器并备案',do:'需要国内访问更快、更稳时再做',who:'助教跟进'},
+  {id:'h4',t:'让 Hermes 24 小时在线',do:'迁到云服务器，电脑不用一直开着',who:'助教跟进'},
+  {id:'h5',t:'自己写 skill',do:'照着 D2 上午 03 的方法，把更多常干的活固化下来',who:'助教跟进'},
+  {id:'h6',t:'客户表怎么用',do:'表单收资料、导出、交给 AI 员工整理',who:'助教跟进'},
+  {id:'h7',t:'随时问（私教）',do:'以后接入私教，不会就问',who:'私教（以后接）'}]},
+ {id:'stuck',icon:'坑',name:'卡住了',full:'卡住了｜坑和突发情况总表',goal:'所有节的「坑」加上现场突发预案，汇成一张能搜的表',items:[
+  {id:'s1',t:'坑和突发情况总表',do:'按「现象 → 怎么办」排；网络、账号、软件、各节专项分开列',who:'学员、助教'}]}
+];
+const CFLAT=[];CAMP.forEach(b=>b.items.forEach(it=>CFLAT.push(it.id)));
+const PHRASES=['用实训营助手（ai-camp）开始','下一步','现在到哪了','跟上进度','重做第 N 步'];
+const citem=id=>{for(const b of CAMP){const it=b.items.find(x=>x.id===id);if(it)return {b,it}}};
+const whoTag=w=>`<span class="who ${/悦姐/.test(w)?'y':''}">${w}</span>`;
+
+const ORDER=[2,3,4,9];
+const PATH=[];ORDER.forEach(lv=>CARDS.filter(c=>c.lv===lv).forEach(c=>PATH.push(c.id)));
+
+/* ================= 检索（演示：中文双字 + 关键词，模拟向量检索） ================= */
+const TH=0.3;
+const STOP=new Set(['怎么','什么','一个','这个','那个','是不','不是','可以','我们','你们','就是','的话','能不','不能','有没','没有','一下','如何','我的','你的']);
+const norm=s=>s.toLowerCase().replace(/[^a-z0-9一-龥]/g,'');
+function grams(s){
+  const g=new Set(),low=s.toLowerCase();
+  (low.match(/[a-z0-9]+/g)||[]).forEach(w=>{if(w!=='ai'&&w.length>1)g.add(w)});
+  (low.match(/[一-龥]+/g)||[]).forEach(run=>{
+    if(run.length===1){if(!STOP.has(run))g.add(run);return}
+    for(let i=0;i<run.length-1;i++){const b=run.slice(i,i+2);if(!STOP.has(b))g.add(b)}
+  });
+  return g;
+}
+CARDS.forEach(c=>{c._g=grams([c.q,...c.ask,...c.kw].join('，'))});
+GAPS.forEach(g=>{g._g=grams(g.q)});
+function score(q,c){
+  const qg=grams(q);if(!qg.size)return 0;
+  let hit=0;qg.forEach(x=>{if(c._g.has(x))hit++});
+  const nq=norm(q);let bonus=0;
+  c.kw.forEach(k=>{if(nq.includes(norm(k)))bonus+=0.22});
+  return hit/qg.size*0.85+Math.min(bonus,0.45);
+}
+
+/* ================= 工具 ================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const card=id=>CARDS.find(c=>c.id===id);
+const lvl=id=>LEVELS.find(l=>l.id===id);
+const lvName=id=>id===9?'进阶':'第 '+id+' 关 · '+lvl(id).name;
+
+const S={view:{type:'home'},seen:new Set(),did:new Set(),mode:null,pi:0,busy:false,chan:'a',cview:{type:'chome'}};
+
+/* ================= 频道 B：渲染 ================= */
+function campTree(){
+  const v=S.cview;
+  let h=`<div class="toc-title">实训营学员手册 · 目录（按海报排）</div>
+    <div class="ch"><div class="ch-head ${v.type==='chome'?'on':''}" data-cdo="chome"><span class="ch-icon">总</span>总览：两天一夜怎么走</div></div>`;
+  CAMP.forEach(b=>{
+    h+=`<div class="ch"><div class="ch-head ${v.type==='cblock'&&v.id===b.id?'on':''}" data-cblock="${b.id}"><span class="ch-icon w">${b.icon}</span>${b.name}<span class="ch-n">${b.items.length}</span></div>
+      ${b.items.map(it=>`<div class="it ${v.type==='citem'&&v.id===it.id?'on':''}" data-citem="${it.id}" ${it.body?'title="正文初稿已写"':''}><span class="st" ${it.body?'style="background:var(--ok)"':''}></span>${it.no?it.no+' ':''}${it.t}${it.fix?'<span class="fx" title="海报口径要改">⚠</span>':''}${it.time?`<span class="tm">${it.time}</span>`:''}</div>`).join('')}</div>`;
+  });
+  $('#tree').innerHTML=h;
+}
+function campReader(){
+  const v=S.cview;
+  if(v.type==='chome'){
+    const n=CFLAT.length;
+    return `<div class="inner">
+      <div class="crumb">实训营 · 总览</div>
+      <h1 class="rtitle">AI控制AI 商业闭环实训营<br>学员手册</h1>
+      <p class="lead">D1、D2 和结营的分段、编号、顺序都跟海报一致，海报上一条就是一节；标题写的是现场实际做的事。课前、课后、卡住了是海报之外补的。现在是目录稿，正文等目录定了再写。</p>
+      <div class="fixbox"><b>⚠ 海报口径要改：${CFLAT.filter(id=>citem(id).it.fix).length} 处。</b>海报说法和现场实际做法对不上的节，目录里标了 ⚠，点进去能看到差在哪、建议怎么改。</div>
+      <div class="meta"><span>2 天 1 夜</span><span>·</span><span>一人一电脑现场实操</span><span>·</span><span>共 ${n} 节</span><span>·</span><span>目录稿 2026-10-24</span></div>
+      <div class="sec"><h2><i>01</i>两天一夜怎么走</h2>
+        <div class="list">${CAMP.map(b=>`<div class="lrow" data-cblock="${b.id}"><span class="ch-icon w">${b.icon}</span><span class="lt">${b.full}<br><small style="color:var(--sub);font-weight:400">${b.goal}</small></span><span class="ls">${b.items.length} 节</span></div>`).join('')}</div></div>
+      <div class="sec"><h2><i>02</i>学员只要会说 5 句话</h2><div>${PHRASES.map(p=>`<span class="phr">${p}</span>`).join('')}</div>
+        <p class="body" style="color:var(--sub);font-size:13px">确认说「行」，往前走说「下一步」。「跟上进度」：掉队了，它会按全班进度帮你快速补齐。「重做第 N 步」里的 N，看每节标题下面写的「助手里叫第 N 步」。Day 1 午饭后、Day 2 开场各开一次新对话。</p></div>
+      <div class="sec todo"><h2><i>03</i>每一节会写的 6 栏</h2><div class="flow">${['基础版','为什么','照着说','完整版（截图）','坑','做到这样算完成'].map(x=>`<span>${x}</span>`).join('')}</div>
+        <p class="body" style="font-size:13px">每节先「基础版」讲核心几步：人人都要做到，跟不上的人也只追这几步；再「完整版」把完整流程讲透，配截图。悦姐看基础版就能设计课程；学员和助教照完整版做。讲师备注默认折叠。</p></div>
+    </div>`;
+  }
+  if(v.type==='cblock'){
+    const b=CAMP.find(x=>x.id===v.id);
+    return `<div class="inner">
+      <div class="crumb"><a data-cdo="chome">实训营</a> / ${b.name}</div>
+      <h1 class="rtitle">${b.full}</h1>
+      <div class="goalbox"><span>这一段结束带走</span>${b.goal}</div>
+      <div class="list">${b.items.map(it=>`<div class="lrow" data-citem="${it.id}"><span class="ln">${it.no||'·'}</span><span class="lt">${it.t}${whoTag(it.who)}</span><span class="ls">${it.time||''}</span></div>`).join('')}</div>
+    </div>`;
+  }
+  const {b,it}=citem(v.id),i=CFLAT.indexOf(v.id),prev=CFLAT[i-1],next=CFLAT[i+1];
+  return `<div class="inner">
+    <div class="crumb"><a data-cdo="chome">实训营</a> / <a data-cblock="${b.id}">${b.name}</a> / ${it.t}</div>
+    <h1 class="rtitle">${it.no?it.no+' ':''}${it.t}</h1>
+    <div class="meta"><span>${b.full}</span>${it.time?`<span>·</span><span>${it.time}</span>`:''}<span>·</span><span>${it.who}</span>${it.step?`<span>·</span><span>助手里叫第 ${it.step} 步</span>`:''}<span>·</span><span>${it.body?'正文初稿':'目录稿 · 正文待写'}</span></div>
+    ${it.poster?`<div class="sec"><h2><i>海报</i>海报原文</h2><div class="quote">${it.poster}</div></div>`:''}
+    ${it.fix?`<div class="fixbox"><b>⚠ 海报口径要改：</b>${it.fix}</div>`:''}
+    <div class="sec"><h2><i>现场</i>这一节实际做什么</h2><div class="actbox">${it.do}</div>${it.use?`<p class="body" style="font-size:13px;color:var(--sub)">用在：${it.use}</p>`:''}</div>
+    ${it.id==='s1'?pitsAllHTML():it.body?bodyHTML(it.body):`<div class="sec todo"><h2><i>待写</i>正文会写的 6 栏</h2><div class="flow">${['基础版','为什么','照着说','完整版（截图）','坑','做到这样算完成'].map(x=>`<span>${x}</span>`).join('')}</div></div>`}
+    <div class="navrow">
+      ${prev?`<button class="navbtn" data-citem="${prev}"><small>← 上一节</small>${citem(prev).it.t}</button>`:''}
+      ${next?`<button class="navbtn r" data-citem="${next}"><small>下一节 →</small>${citem(next).it.t}</button>`:''}
+    </div></div>`;
+}
+function bodyHTML(B){
+  return `${B.verify?`<div class="fixbox"><b>⚠ 开课前要实测：</b>${B.verify}</div>`:''}<div class="sec"><h2><i>基础版</i>核心几步，人人都要做到</h2><ol class="ql">${B.quick.map(x=>`<li>${x}</li>`).join('')}</ol></div>
+    <div class="sec"><h2><i>为什么</i>为什么要做这一步</h2><p class="body">${B.why}</p></div>
+    <div class="sec"><h2><i>照着说</i>对 Codex 这么说，点一下就复制</h2><div>${B.say.map(x=>`<button class="qchip" data-copy="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>
+    ${B.examples?`<div class="sec"><h2><i>示例</i>${B.exTitle||'操作示例'}</h2>${B.examples.map(e=>`<div class="ex"><h3>${e.h}</h3><table>${e.rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table></div>`).join('')}</div>`:''}
+    <div class="sec"><h2><i>完整版</i>完整流程，一步一步来</h2>${B.steps.map((s,k)=>`<div class="stp"><b>${k+1}</b><div>${s.t}${s.img?[].concat(s.img).map(src=>`<figure class="shotimg"><img src="${src}" alt="${esc(s.shot||'')}" loading="lazy"></figure>`).join(''):s.shot?`<div class="shot">📷 截图位：${s.shot}（待补）</div>`:''}</div></div>`).join('')}</div>
+    <div class="sec"><h2><i>坑</i>卡住了看这里</h2>${B.pits.map(p=>`<div class="pit"><div>${p[0]}</div><div>→ ${p[1]}</div></div>`).join('')}</div>
+    <div class="sec"><h2><i>完成</i>做到这样算完成</h2><ul class="dl">${B.done.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+    ${B.junshi?`<div class="sec"><h2><i>军师库</i>56 个岗位军师，点开看，点「复制提示词」粘到 Codex</h2><div id="jsbox">加载中…</div></div>`:''}
+    <details class="sec notes"><summary>讲师 / 助教备注（学员不用看）</summary><ul>${B.notes.map(x=>`<li>${x}</li>`).join('')}</ul></details>`;
+}
+function pitsAllHTML(){
+  let n=0;const parts=[];
+  CAMP.forEach(b=>b.items.forEach(it=>{if(it.body&&it.body.pits&&it.body.pits.length){n+=it.body.pits.length;
+    parts.push(`<div class="sec"><h2><i>${b.icon}</i><a data-citem="${it.id}" style="cursor:pointer">${it.no?it.no+' ':''}${it.t}</a></h2>${it.body.pits.map(p=>`<div class="pit"><div>${p[0]}</div><div>→ ${p[1]}</div></div>`).join('')}</div>`)}}));
+  return `<div class="fixbox">自动汇总：各节「坑」一共 ${n} 条，按上课顺序排。点标题回到那一节。现场突发预案（网络、账号、讲师翻车）还要另补一节。</div>`+parts.join('');
+}
+let JS=null;
+const JSCATS=['销售','客服与售后','文案','短视频与新媒体运营','私域与社群','店长与门店管理','招聘与人事','报价、采购与经营分析','招商加盟','教务'];
+async function fillJunshi(){
+  const box=document.getElementById('jsbox');if(!box)return;
+  if(!JS){try{JS=await (await fetch('data/junshi.json')).json()}catch(e){box.textContent='军师库没加载出来：要用本地服务器打开这个页面。';return}}
+  box.innerHTML=JSCATS.map(c=>{const list=JS.filter(x=>x.cat===c);return list.length?`<div class="jscat">${c}（${list.length}）</div>`+list.map(x=>`<details class="jsc"><summary><b>${x.id} ${esc(x.name)}</b><span>${esc(x.use)}</span></summary>
+    <p class="jsm">你要给它：${esc(x.give)}　·　交回来：${esc(x.output)}　·　适合：${esc([].concat(x.industry).join('、'))}</p>
+    <pre class="jsp">${esc(x.prompt)}</pre><button class="btn primary" data-copy="${esc(x.prompt)}">复制提示词</button></details>`).join(''):''}).join('');
+}
+function openC(v){S.cview=v;renderTree();renderReader();$('#reader').scrollTop=0;fillJunshi()}
+function setChan(c){
+  S.chan=c;document.body.classList.toggle('camp',c==='b');
+  document.querySelectorAll('#chans button').forEach(x=>x.classList.toggle('on',x.dataset.chan===c));
+  $('#btag').textContent=c==='b'?'实训营 · 目录稿':'Demo v2 · ChatGPT';
+  history.replaceState(null,'',c==='b'?'#camp':location.pathname);
+  renderTree();renderReader();$('#reader').scrollTop=0;fillJunshi();
+}
+
+/* ================= 左：目录 ================= */
+function renderTree(){
+  if(S.chan==='b')return campTree();
+  const v=S.view;
+  let h=`<div class="toc-title">杰哥的知识库 · 目录</div>
+    <div class="ch"><div class="ch-head ${v.type==='home'?'on':''}" data-do="home"><span class="ch-icon">始</span>开始：这门课怎么学</div></div>`;
+  LEVELS.forEach(l=>{
+    const cs=CARDS.filter(c=>c.lv===l.id),n=cs.filter(c=>S.seen.has(c.id)).length;
+    h+=`<div class="ch"><div class="ch-head ${v.type==='ch'&&v.id===l.id?'on':''}" data-ch="${l.id}"><span class="ch-icon">${l.icon}</span>${lvName(l.id)}<span class="ch-n">${cs.length?n+'/'+cs.length:''}</span></div>
+      ${cs.map(c=>`<div class="it ${S.seen.has(c.id)?'seen':''} ${v.type==='card'&&v.id===c.id?'on':''}" data-card="${c.id}"><span class="st"></span>${c.q}</div>`).join('')}</div>`;
+  });
+  h+=`<div class="toc-foot"><div class="ch-head ${v.type==='gap'?'on':''}" data-do="gap"><span class="ch-icon">补</span>待补清单<span class="badge" id="gapbadge">${GAPS.length}</span></div></div>`;
+  $('#tree').innerHTML=h;
+}
+
+/* ================= 中：阅读区 ================= */
+function homeHTML(){
+  return `<div class="inner">
+    <div class="crumb">开始</div>
+    <h1 class="rtitle">不用先学完一门课，<br>卡在哪，就从哪学。</h1>
+    <p class="lead">左边是杰哥的知识库，想按顺序看就按顺序看。右边是杰哥的 AI 分身：跟着它一步步走也行，自己翻、卡住了再问也行，它会直接把你带到对应的那一节。</p>
+    <div class="meta"><span>V1 · ChatGPT</span><span>·</span><span>知识库 ${CARDS.length} 张卡</span><span>·</span><span>来自直播真实提问</span><span>·</span><span>待补 ${GAPS.length} 条</span></div>
+    <div class="tiles">
+      <div class="tile" data-do="start-guide"><b>跟着私教走</b><p>按你的水平排好顺序，一节一节带你看，会的直接跳过。</p></div>
+      <div class="tile" data-do="free"><b>自己随便翻</b><p>左边目录随便点，想看哪节看哪节，不锁关。</p></div>
+      <div class="tile" data-ask="我让 AI 自由发挥，给的方向我都看不懂"><b>卡住了直接问</b><p>用你自己的话问，私教翻知识库回答，再把你带到那一节。</p></div>
+    </div>
+    <div class="sec"><h2><i>关卡</i>关卡大家都一样，练的是你自己手上的活</h2>
+      <div class="lvgrid">${LEVELS.map(l=>`<div class="lvc" data-ch="${l.id}"><span class="ch-icon">${l.icon}</span><div><b>${lvName(l.id)}</b><small>${l.goal}</small></div></div>`).join('')}</div>
+    </div></div>`;
+}
+function chHTML(id){
+  const L=lvl(id),cs=CARDS.filter(c=>c.lv===id);
+  return `<div class="inner">
+    <div class="crumb"><a data-do="home">知识库</a> / ${lvName(id)}</div>
+    <h1 class="rtitle">${lvName(id)}</h1>
+    <p class="lead">${L.intro}</p>
+    <div class="goalbox"><span>通关标准</span>${L.goal}</div>
+    ${cs.length?`<div class="list">${cs.map((c,i)=>`<div class="lrow ${S.seen.has(c.id)?'seen':''}" data-card="${c.id}"><span class="ln">${String(i+1).padStart(2,'0')}</span><span class="lt">${c.q}</span><span class="ls">${S.seen.has(c.id)?'已看':'没看'}</span></div>`).join('')}</div>
+      <button class="btn primary" data-card="${cs[0].id}">从第一节开始</button>`
+    :`<div class="emptybox">这一关的卡还在准备。有问题直接问右边的私教，答不上来的会记进待补清单。</div>`}
+  </div>`;
+}
+function cardHTML(id){
+  const c=card(id),i=PATH.indexOf(id),prev=PATH[i-1],next=PATH[i+1];
+  return `<div class="inner">
+    <div class="crumb"><a data-do="home">知识库</a> / <a data-ch="${c.lv}">${lvName(c.lv)}</a> / ${c.q}</div>
+    <h1 class="rtitle">${c.q}</h1>
+    <p class="lead">「${c.ask[0]}」「${c.ask[1]}」，问的都是这件事。</p>
+    <div class="meta"><span>${lvName(c.lv)}</span><span>·</span><span>杰哥直播原话</span><span>·</span><span>适用：${c.tool||'任何工具'}</span><span>·</span><span>更新 2026-10</span></div>
+    <div class="sec say"><h2><i>01</i>杰哥说</h2><div class="quote">${c.say}</div></div>
+    <div class="sec"><h2><i>02</i>打个比方 <em class="draft">AI 草稿 · 待杰哥换成自己的</em></h2><p class="body">${c.ana}</p></div>
+    <div class="sec"><h2><i>03</i>马上动手</h2><div class="actbox">${c.act}</div>
+      <div class="row"><button class="btn primary" data-do="done-step">做完了，跟私教说一声</button><button class="btn" data-ask="这一节我没太懂：${c.q}">没看懂，问私教</button></div></div>
+    <div class="sec"><h2><i>04</i>别人还这么问</h2><div>${c.ask.map(a=>`<button class="qchip" data-ask="${a}">${a}</button>`).join('')}</div></div>
+    <div class="navrow">
+      ${prev?`<button class="navbtn" data-card="${prev}"><small>← 上一节</small>${card(prev).q}</button>`:''}
+      ${next?`<button class="navbtn r" data-card="${next}"><small>下一节 →</small>${card(next).q}</button>`:''}
+    </div></div>`;
+}
+function gapHTML(){
+  const list=[...GAPS].sort((a,b)=>b.n-a.n);
+  return `<div class="inner">
+    <div class="crumb"><a data-do="home">知识库</a> / 待补清单</div>
+    <h1 class="rtitle">待补清单</h1>
+    <p class="lead">学员问了、知识库里找不到的问题，自动记在这里。私教不瞎编。被问得越多，越先补。</p>
+    <div class="flow"><span>学员提问</span>→<span>知识库没找到</span>→<span>记进待补清单</span>→<span>杰哥直播亲自答</span>→<span>整理成卡入库</span></div>
+    ${list.map(g=>`<div class="gapitem ${g.fresh?'fresh':''}"><b>${esc(g.q)}</b><small><span class="cnt">被问 ${g.n} 次</span>${g.src}</small></div>`).join('')}
+  </div>`;
+}
+function renderReader(){
+  const v=S.view,R=$('#reader');
+  if(S.chan==='b'){R.innerHTML=campReader();return}
+  R.innerHTML=v.type==='home'?homeHTML():v.type==='ch'?chHTML(v.id):v.type==='card'?cardHTML(v.id):gapHTML();
+}
+
+/* ================= 右：进度 / 上下文 ================= */
+function renderProg(){
+  const n=S.seen.size,t=CARDS.length;
+  $('#pnum').textContent=n+'/'+t;$('#pbar').style.width=(n/t*100)+'%';
+  $('#mils').innerHTML=[2,3,4].map(id=>{
+    const L=lvl(id),got=S.did.has(id);
+    return `<div class="mil ${got?'got':''}" title="在这一关做完一次「马上动手」就点亮"><span class="ic">${got?'✓':L.icon}</span>${L.badge}</div>`;
+  }).join('');
+}
+function updateCtx(){
+  const el=$('#ctx');
+  if(S.view.type==='card'){
+    const c=card(S.view.id);
+    el.innerHTML=`<span>正在看</span><b>《${c.q}》</b><button data-ask="这一节我没太懂：${c.q}">问这一节</button>`;
+    el.classList.add('on');
+  }else el.classList.remove('on');
+}
+
+function openView(v,{fromBot=false}={}){
+  S.view=v;
+  if(v.type==='card'){S.seen.add(v.id);const i=PATH.indexOf(v.id);if(i>=0)S.pi=i}
+  renderTree();renderReader();renderProg();updateCtx();
+  $('#reader').scrollTop=0;
+  if(v.type==='card'){
+    const it=document.querySelector(`.it[data-card="${v.id}"]`);
+    if(it){it.scrollIntoView({block:'nearest'});if(fromBot)it.classList.add('flash')}
+    if(fromBot){const s=document.querySelector('.sec.say');s&&s.classList.add('flash')}
+  }
+}
+
+/* ================= 聊天 ================= */
+const msgs=$('#msgs');
+const scrollDown=()=>{msgs.scrollTop=msgs.scrollHeight};
+function addMsg(who,html){const d=document.createElement('div');d.className='msg '+who;d.innerHTML=html;msgs.appendChild(d);scrollDown();return d}
+function userSay(t){addMsg('me',`<div class="bubble">${esc(t)}</div>`)}
+async function typeInto(el,text){
+  for(let i=0;i<text.length;i++){el.textContent+=text[i];if(i%2===0){scrollDown();await sleep(14)}}
+}
+// lines: 字符串，或 [加粗标签, 正文]
+async function botSay(lines,acts,pre=''){
+  S.busy=true;
+  const t=addMsg('bot','<div class="bubble typing"><i></i><i></i><i></i></div>');
+  await sleep(550);t.remove();
+  const r=addMsg('bot',`${pre}<div class="bubble">${lines.map(()=>'<p></p>').join('')}</div>`);
+  const ps=r.querySelectorAll('.bubble p');
+  for(let i=0;i<lines.length;i++){
+    const L=lines[i];
+    if(Array.isArray(L)){ps[i].innerHTML=`<b>${L[0]}</b><span></span>`;await typeInto(ps[i].lastChild,L[1])}
+    else await typeInto(ps[i],L);
+    await sleep(120);
+  }
+  if(acts&&acts.length){
+    const d=document.createElement('div');d.className='acts';
+    d.innerHTML=acts.map(([k,txt,cls])=>`<button class="act-btn ${cls||''}" data-do="${k}">${txt}</button>`).join('');
+    r.appendChild(d);
+  }
+  scrollDown();S.busy=false;return r;
+}
+const guideActs=()=>[['next','看完了，下一步','primary'],['skip','这节我会了，跳过'],['askq','我有个问题']];
+
+function setMode(m){S.mode=m;document.querySelectorAll('.modes button').forEach(b=>b.classList.toggle('on',b.dataset.mode===m))}
+
+function logGap(q){
+  const nq=norm(q),qg=grams(q);
+  GAPS.forEach(g=>g.fresh=false);
+  const m=GAPS.find(g=>{
+    if(g.kw&&g.kw.filter(k=>nq.includes(norm(k))).length>=2)return true;
+    let hit=0;qg.forEach(x=>{if(g._g.has(x))hit++});
+    return qg.size&&hit/qg.size>=0.5;
+  });
+  let n=1;
+  if(m){m.n++;m.fresh=true;n=m.n}else GAPS.push({q,n:1,src:'学员提问 · 知识库没找到',_g:qg,fresh:true});
+  renderTree();if(S.view.type==='gap')renderReader();
+  const b=$('#gapbadge');b&&b.classList.add('pulse');
+  return n;
+}
+
+async function explain(c){
+  openView({type:'card',id:c.id});
+  await botSay(['换个说法讲。',['打个比方：',c.ana],['说白了就一句：',c.say.split('。')[0]+'。'],['你先做这一步：',c.act],'做完回来跟我说，咱们看看效果。']);
+}
+
+async function ask(q){
+  q=String(q).trim();if(!q||S.busy)return;
+  userSay(q);$('#inp').value='';$('#topq').value='';
+  const m=q.match(/^这一节我没太懂：(.+)$/);
+  if(m){const c=CARDS.find(x=>x.q===m[1]);if(c)return explain(c)}
+
+  const ctxId=S.view.type==='card'?S.view.id:null;
+  const ranked=CARDS.map(c=>({c,s:score(q,c)+(c.id===ctxId?0.08:0)})).sort((a,b)=>b.s-a.s);
+  const top=ranked.filter(r=>r.s>=TH).slice(0,2);
+
+  if(!top.length){
+    const n=logGap(q);
+    await botSay(['这个问题我的知识库里还没有，我不瞎编。',
+      '已经记进待补清单了，杰哥下场直播亲自答，答完整理成卡，下回你再问我就会了。'+(n>1?'这个问题已经有 '+n+' 个人问过了，会优先补。':'')],
+      [['gap','看看待补清单']],
+      `<div class="retr miss">🔍 翻遍了知识库，没找到能回答这个问题的卡</div>`);
+    return;
+  }
+  const c=top[0].c;
+  openView({type:'card',id:c.id},{fromBot:true});
+  const pre=`<div class="retr">🔍 翻了知识库，找到 ${top.length} 张相关的卡${top.map(x=>`<button class="hit" data-card="${x.c.id}"><span>📇 ${x.c.q}</span><em>匹配 ${Math.round(Math.min(x.s,0.97)*100)}%</em></button>`).join('')}</div>`;
+  const where=c.lv===2?'这正好是你现在这一关要练的，':'这一节在'+lvName(c.lv)+'，';
+  await botSay([c.say,['打个比方：',c.ana],['你现在就做一件事：',c.act],where+'已经在中间给你打开了，完整的看那儿。'],
+    top[1]?[['open:'+top[1].c.id,'也看看：'+top[1].c.q]]:null,pre);
+}
+
+async function doAction(a,btn){
+  if(a==='home')return openView({type:'home'});
+  if(a==='gap')return openView({type:'gap'});
+  if(a.startsWith('open:'))return openView({type:'card',id:a.slice(5)},{fromBot:true});
+  if(S.busy)return;
+  if(btn&&btn.closest('.acts'))btn.closest('.acts').querySelectorAll('button').forEach(b=>b.disabled=true);
+
+  if(a==='start-guide'){
+    setMode('guide');userSay('跟着你一步步走');
+    const id=PATH[S.pi];openView({type:'card',id},{fromBot:true});
+    return botSay(['好，按你的水平，从第 2 关「指挥它改」开始。中间已经打开了第一节：《'+card(id).q+'》。','看完点下面的按钮。会的直接跳过，不用每节都看。'],guideActs());
+  }
+  if(a==='free'){
+    setMode('free');userSay('我自己翻');
+    return botSay(['行，左边目录随便点，不锁关。','你打开哪一节我都知道，卡住了直接问，我把你带到对应的地方。']);
+  }
+  if(a==='askq'){$('#inp').focus();return botSay(['说吧，用你自己的话问。'])}
+  if(a==='next'||a==='skip'){
+    userSay(a==='next'?'看完了，下一步':'这节我会了，跳过');
+    const cur=PATH[S.pi],nid=PATH[S.pi+1];
+    if(!nid)return botSay(['知识库里的卡都过了一遍。接下来去第 6 关：自己挑一件新活，做完拿给我看。']);
+    const crossed=card(nid).lv!==card(cur).lv;
+    openView({type:'card',id:nid},{fromBot:true});
+    const lines=[];
+    if(crossed)lines.push(lvName(card(cur).lv)+'的内容过完了，接下来是'+lvName(card(nid).lv)+'。');
+    lines.push((a==='skip'?'行，跳过。':'好。')+'下一节：《'+card(nid).q+'》，已经在中间打开了。');
+    return botSay(lines,guideActs());
+  }
+  if(a==='done-step'){
+    if(S.view.type!=='card')return;
+    const c=card(S.view.id);
+    userSay('「马上动手」那一步我做完了');
+    const first=[2,3,4].includes(c.lv)&&!S.did.has(c.lv);
+    S.did.add(c.lv);renderProg();
+    const lines=['好样的，做了才算数。改了几轮？最后满不满意？把结果截个图发我看看。（演示版还没接图片）'];
+    if(first)lines.push(lvName(c.lv)+'，点亮「'+lvl(c.lv).badge+'」。');
+    return botSay(lines,S.mode==='guide'?[['next','下一步','primary']]:null);
+  }
+}
+
+/* ================= 事件 ================= */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-chan],[data-copy],[data-cdo],[data-cblock],[data-citem],[data-mode],[data-do],[data-ask],[data-card],[data-ch]');if(!t)return;
+  if(t.disabled)return;
+  if(t.dataset.chan){if(S.chan!==t.dataset.chan)setChan(t.dataset.chan);return}
+  if(t.dataset.copy!==undefined){const o=t.textContent;(navigator.clipboard?navigator.clipboard.writeText(t.dataset.copy):Promise.reject()).then(()=>{t.textContent='已复制 ✓';setTimeout(()=>t.textContent=o,1200)}).catch(()=>{});return}
+  if(t.dataset.cdo)return openC({type:t.dataset.cdo});
+  if(t.dataset.cblock)return openC({type:'cblock',id:t.dataset.cblock});
+  if(t.dataset.citem)return openC({type:'citem',id:t.dataset.citem});
+  if(t.dataset.mode){if(S.mode!==t.dataset.mode)doAction(t.dataset.mode==='guide'?'start-guide':'free');return}
+  if(t.dataset.do)return doAction(t.dataset.do,t);
+  if(t.dataset.ask)return ask(t.dataset.ask);
+  if(t.dataset.card)return openView({type:'card',id:t.dataset.card},{fromBot:!!t.closest('#msgs')});
+  if(t.dataset.ch!==undefined)return openView({type:'ch',id:+t.dataset.ch});
+});
+$('#sugs').innerHTML=SUGS.map(s=>`<button class="sug" data-ask="${s}">${s}</button>`).join('');
+$('#send').onclick=()=>ask($('#inp').value);
+$('#inp').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)ask($('#inp').value)};
+$('#topq').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)ask($('#topq').value)};
+
+/* ================= 启动 ================= */
+renderTree();renderReader();renderProg();updateCtx();
+if(location.hash==='#camp')setChan('b');
+(async()=>{
+  await botSay(['我是杰哥的 AI 分身。口气是杰哥的，人不是。']);
+  await botSay(['摸底下来，你用过 AI，建议从第 2 关「指挥它改」开始。','你想怎么学？跟着我一步步走，还是自己翻、卡住了再叫我？'],
+    [['start-guide','跟着你一步步走','primary'],['free','我自己翻']]);
+})();
+</script>
+</body>
+</html>
