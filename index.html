@@ -188,6 +188,19 @@ body.camp .main{grid-template-columns:320px minmax(0,1fr)}
 .jsc summary span{color:var(--sub);font-size:13px}
 .jsm{font-size:13px;color:var(--sub);margin:8px 0}
 .jsp{white-space:pre-wrap;font-family:inherit;font-size:13px;background:#faf8f3;border-radius:8px;padding:10px 12px;margin:0 0 8px;line-height:1.8}
+.lead1{font-size:15px;color:#495057;line-height:1.8;margin:-4px 0 16px}
+.posterbox{padding:12px 18px}.posterbox summary{cursor:pointer;font-weight:600;color:var(--sub);font-size:14px}.posterbox summary em{font-style:normal;color:#e67700}
+.posterbox .quote{margin-top:12px;font-size:15px}
+.ch.closed .it,.ch.closed .sub{display:none}
+.caret{margin-left:6px;border:none;background:none;cursor:pointer;color:var(--sub);font-size:12px;padding:0 4px}
+.sub{margin:2px 0 6px 40px;border-left:2px solid var(--line);padding-left:6px}
+.subi{font-size:12.5px;color:#868e96;padding:4px 8px;border-radius:6px;cursor:pointer;line-height:1.5}
+.subi.l2{padding-left:20px;font-size:12px}
+.subi:hover{color:var(--ink);background:#f1ede4}
+.subi.on{color:var(--accent);background:var(--accent-soft);font-weight:600}
+.secnav{display:none}
+#tocbar{display:none}
+[id^="sx-"]{scroll-margin-top:16px}
 .verbar{display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap}
 .verbar button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;cursor:pointer;font-size:12px;color:var(--sub)}
 .verbar button.on{background:var(--ink);border-color:var(--ink);color:#fff}
@@ -220,7 +233,7 @@ details.notes ul{margin-top:10px;padding-left:20px;font-size:14px;line-height:1.
 .phr{display:inline-block;border:1px solid var(--line);background:#f8f9fa;border-radius:999px;padding:4px 12px;margin:0 6px 8px 0;font-size:13px;font-family:var(--mono)}
 
 @media(max-width:1180px){.main{grid-template-columns:220px minmax(0,1fr) 340px}body.camp .main{grid-template-columns:260px minmax(0,1fr)}.reader{padding:28px 26px 60px}.tiles{grid-template-columns:1fr}.lvgrid{grid-template-columns:1fr}}
-@media(max-width:900px){.top{gap:8px;padding:0 10px}.tag,.me{display:none}.brand{font-size:14px;gap:6px}.logo{width:28px;height:28px}.chans{margin-left:auto}.chans button{padding:5px 8px;font-size:12px}.main,body.camp .main{grid-template-columns:1fr;height:auto}.reader{padding:20px 14px 50px}.sec{padding:16px 14px}.rtitle{font-size:26px}.pit{grid-template-columns:1fr}.toc{max-height:280px;border-right:none;border-bottom:1px solid var(--line)}.chat{height:85vh;border-left:none;border-top:1px solid var(--line)}.search{display:none}}
+@media(max-width:900px){body.camp .reader{overflow:visible}body.camp #tocbar{display:flex;gap:6px;align-items:center;width:100%;border:none;border-bottom:1px solid var(--line);background:#faf8f3;padding:10px 14px;font:inherit;font-size:13px;color:var(--sub);cursor:pointer;text-align:left}body.camp #tocbar b{color:var(--ink);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}body.camp .toc{display:none;max-height:none}body.camp.tocopen .toc{display:block}body.camp .secnav{display:flex;gap:6px;overflow-x:auto;position:sticky;top:0;z-index:5;background:var(--paper);padding:8px 0;margin:0 0 12px;border-bottom:1px solid var(--line);scrollbar-width:none}body.camp .secnav::-webkit-scrollbar{display:none}.secnav button{flex:none;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;font-size:12.5px;color:var(--sub);cursor:pointer}.secnav button.on{background:var(--accent);border-color:var(--accent);color:#fff}body.camp [id^="sx-"]{scroll-margin-top:60px}.top{gap:8px;padding:0 10px}.tag,.me{display:none}.brand{font-size:14px;gap:6px}.logo{width:28px;height:28px}.chans{margin-left:auto}.chans button{padding:5px 8px;font-size:12px}.main,body.camp .main{grid-template-columns:1fr;height:auto}.reader{padding:20px 14px 50px}.sec{padding:16px 14px}.rtitle{font-size:26px}.pit{grid-template-columns:1fr}.toc{max-height:280px;border-right:none;border-bottom:1px solid var(--line)}.chat{height:85vh;border-left:none;border-top:1px solid var(--line)}.search{display:none}}
 </style>
 </head>
 <body>
@@ -233,6 +246,7 @@ details.notes ul{margin-top:10px;padding-left:20px;font-size:14px;line-height:1.
 </header>
 
 <div class="main">
+  <button id="tocbar">目录 ▾ <b>总览</b></button>
   <aside class="toc" id="tree"></aside>
   <main class="reader" id="reader"></main>
   <section class="chat">
@@ -638,13 +652,13 @@ const CAMP=[
     ['老板常问：能换成我自己的域名吗？','能，课后再绑。国内要访问更稳，课后迁到国内服务器并备案。']],
    say:['下一步。','网址发我。','手机打不开，帮我看看。','招牌套餐改成 178 元，改到官网上，再上传一次。','我 GitHub 上原来有个网站，别动它。'],
    steps:[
-    {t:'确认课前登录过 GitHub（课前准备 0.4）。没登录，叫助教。'},
-    {t:'说「下一步」。Codex 先看你 GitHub 上原来有没有网站：有就另开一个，不碰原来的。然后它把官网和小工具上传上去，只传网页，企业档案和客户表不会传。看到它要动原来的网站，马上点停止。',shot:'Codex 在上传'},
-    {t:'等 1–3 分钟，它发你一个网址，长这样：https://你的用户名.github.io/品牌名/',shot:'拿到网址'},
-    {t:'拿手机，关掉 Wi-Fi，用流量打开这个网址。官网能看、按钮点得动，就对了。',shot:'手机打开官网'},
-    {t:'当一回客户：在官网上点「算算套餐预算」，就是你下午做的小工具。选人数，点「计算」，再点「打开客户表单」，名字填「测试」，留个电话，点提交。',shot:'在手机上提交一次'},
-    {t:'打开飞书客户表，看到刚才那条「测试」，说明客户从看到官网到留下电话，这条路通了。',shot:'客户表里的测试记录'},
-    {t:'以后要改：先改档案，比如「招牌套餐改成 178 元」，再说「改到官网上，再上传一次」。一两分钟后刷新网址，就是新价格。网址不变。',shot:'改完再上传'}],
+    {n:'确认登录',t:'确认课前登录过 GitHub（课前准备 0.4）。没登录，叫助教。'},
+    {n:'上传到网上',t:'说「下一步」。Codex 先看你 GitHub 上原来有没有网站：有就另开一个，不碰原来的。然后它把官网和小工具上传上去，只传网页，企业档案和客户表不会传。看到它要动原来的网站，马上点停止。',shot:'Codex 在上传'},
+    {n:'拿到网址',t:'等 1–3 分钟，它发你一个网址，长这样：https://你的用户名.github.io/品牌名/',shot:'拿到网址'},
+    {n:'手机打开',t:'拿手机，关掉 Wi-Fi，用流量打开这个网址。官网能看、按钮点得动，就对了。',shot:'手机打开官网'},
+    {n:'当一回客户',t:'当一回客户：在官网上点「算算套餐预算」，就是你下午做的小工具。选人数，点「计算」，再点「打开客户表单」，名字填「测试」，留个电话，点提交。',shot:'在手机上提交一次'},
+    {n:'看客户表',t:'打开飞书客户表，看到刚才那条「测试」，说明客户从看到官网到留下电话，这条路通了。',shot:'客户表里的测试记录'},
+    {n:'以后改内容',t:'以后要改：先改档案，比如「招牌套餐改成 178 元」，再说「改到官网上，再上传一次」。一两分钟后刷新网址，就是新价格。网址不变。',shot:'改完再上传'}],
    pits:[
     ['它说 GitHub 没登录','叫助教，登录那一下你自己点'],
     ['等了 5 分钟还打不开','让它查一下；网址最后要带「/品牌名/」'],
@@ -754,7 +768,7 @@ const card=id=>CARDS.find(c=>c.id===id);
 const lvl=id=>LEVELS.find(l=>l.id===id);
 const lvName=id=>id===9?'进阶':'第 '+id+' 关 · '+lvl(id).name;
 
-const S={view:{type:'home'},seen:new Set(),did:new Set(),mode:null,pi:0,busy:false,chan:'a',cview:{type:'chome'},ver:'stu'};
+const S={view:{type:'home'},seen:new Set(),did:new Set(),mode:null,pi:0,busy:false,chan:'a',cview:{type:'chome'},ver:'stu',open:new Set(),openTouched:new Set()};
 const TEA=()=>S.ver==='tea';
 const verBar=()=>`<div class="verbar"><button data-ver="stu" class="${TEA()?'':'on'}">学员版</button><button data-ver="tea" class="${TEA()?'on':''}">讲师版（给悦姐）</button><span>${TEA()?'多了原理揭秘、海报对照和讲师备注':'只看怎么做'}</span></div>`;
 
@@ -763,9 +777,12 @@ function campTree(){
   const v=S.cview;
   let h=`<div class="toc-title">实训营学员手册 · 目录（按海报排）</div>
     <div class="ch"><div class="ch-head ${v.type==='chome'?'on':''}" data-cdo="chome"><span class="ch-icon">总</span>总览：两天一夜怎么走</div></div>`;
+  const cur=v.type==='citem'?citem(v.id).b.id:v.type==='cblock'?v.id:null;
+  if(cur&&!S.openTouched.has(cur))S.open.add(cur);
   CAMP.forEach(b=>{
-    h+=`<div class="ch"><div class="ch-head ${v.type==='cblock'&&v.id===b.id?'on':''}" data-cblock="${b.id}"><span class="ch-icon w">${b.icon}</span>${b.name}<span class="ch-n">${b.items.length}</span></div>
-      ${b.items.map(it=>`<div class="it ${v.type==='citem'&&v.id===it.id?'on':''}" data-citem="${it.id}" ${it.body?'title="正文初稿已写"':''}><span class="st" ${it.body?'style="background:var(--ok)"':''}></span>${it.no?it.no+' ':''}${it.t}${it.fix?'<span class="fx" title="海报口径要改">⚠</span>':''}${it.time?`<span class="tm">${it.time}</span>`:''}</div>`).join('')}</div>`;
+    const open=S.open.has(b.id);
+    h+=`<div class="ch ${open?'':'closed'}"><div class="ch-head ${v.type==='cblock'&&v.id===b.id?'on':''}" data-cblock="${b.id}"><span class="ch-icon w">${b.icon}</span>${b.name}<span class="ch-n">${b.items.length}</span><button class="caret" data-ctog="${b.id}" title="展开/收起">${open?'▾':'▸'}</button></div>
+      ${b.items.map(it=>{const on=v.type==='citem'&&v.id===it.id;return `<div class="it ${on?'on':''}" data-citem="${it.id}" ${it.body?'title="正文初稿已写"':''}><span class="st" ${it.body?'style="background:var(--ok)"':''}></span>${it.no?it.no+' ':''}${it.t}${it.fix&&TEA()?'<span class="fx" title="海报口径要改">⚠</span>':''}${it.time?`<span class="tm">${it.time}</span>`:''}</div>${on&&it.body?`<div class="sub">${secList(it).map(x=>`<div class="subi l${x.l}" data-goto="${x.id}">${x.label}</div>`).join('')}</div>`:''}`}).join('')}</div>`;
   });
   $('#tree').innerHTML=h;
 }
@@ -801,9 +818,10 @@ function campReader(){
     ${verBar()}<div class="crumb"><a data-cdo="chome">实训营</a> / <a data-cblock="${b.id}">${b.name}</a> / ${it.t}</div>
     <h1 class="rtitle">${it.no?it.no+' ':''}${it.t}</h1>
     <div class="meta"><span>${b.full}</span>${it.time?`<span>·</span><span>${it.time}</span>`:''}<span>·</span><span>${it.who}</span>${it.step?`<span>·</span><span>助手里叫第 ${it.step} 步</span>`:''}${TEA()?`<span>·</span><span>${it.body?'正文初稿':'目录稿 · 正文待写'}</span>`:''}</div>
-    ${TEA()&&it.poster?`<div class="sec"><h2><i>海报</i>海报原文</h2><div class="quote">${it.poster}</div></div>`:''}
-    ${TEA()&&it.fix?`<div class="fixbox"><b>⚠ 海报口径要改：</b>${it.fix}</div>`:''}
-    ${TEA()||!it.body?`<div class="sec"><h2><i>现场</i>这一节实际做什么</h2><div class="actbox">${it.do}</div>${it.use?`<p class="body" style="font-size:13px;color:var(--sub)">用在：${it.use}</p>`:''}</div>`:''}
+    ${it.body?`<p class="lead1">${it.do}</p>`:''}
+    ${TEA()&&(it.poster||it.fix)?`<details class="sec posterbox"><summary>海报原文${it.fix?' · <em>⚠ 口径要改</em>':''}</summary>${it.poster?`<div class="quote">${it.poster}</div>`:''}${it.fix?`<div class="fixbox" style="margin:12px 0 0"><b>⚠ 海报口径要改：</b>${it.fix}</div>`:''}</details>`:''}
+    ${!it.body?`<div class="sec"><h2><i>现场</i>这一节实际做什么</h2><div class="actbox">${it.do}</div>${it.use?`<p class="body" style="font-size:13px;color:var(--sub)">用在：${it.use}</p>`:''}</div>`:''}
+    ${it.body?secChips(it):''}
     ${it.id==='s1'?pitsAllHTML():it.body?bodyHTML(it.body):`<div class="sec todo"><h2><i>待写</i>正文会写的 6 栏</h2><div class="flow">${['基础版','为什么','照着说','完整版（截图）','坑','做到这样算完成'].map(x=>`<span>${x}</span>`).join('')}</div></div>`}
     <div class="navrow">
       ${prev?`<button class="navbtn" data-citem="${prev}"><small>← 上一节</small>${citem(prev).it.t}</button>`:''}
@@ -811,16 +829,42 @@ function campReader(){
     </div></div>`;
 }
 function bodyHTML(B){
-  return `${TEA()&&B.verify?`<div class="fixbox"><b>⚠ 开课前要实测：</b>${B.verify}</div>`:''}<div class="sec"><h2><i>基础版</i>核心几步，人人都要做到</h2><ol class="ql">${B.quick.map(x=>`<li>${x}</li>`).join('')}</ol></div>
-    <div class="sec"><h2><i>为什么</i>为什么要做这一步</h2><p class="body">${B.why}</p></div>
-    ${TEA()&&B.reveal?`<div class="sec reveal"><h2><i>原理揭秘</i>这一步背后在干嘛</h2>${B.reveal.map(r=>`<div class="rv"><b>${r[0]}</b><p>${r[1]}</p></div>`).join('')}</div>`:''}
-    <div class="sec"><h2><i>照着说</i>对 Codex 这么说，点一下就复制</h2><div>${B.say.map(x=>`<button class="qchip" data-copy="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>
-    ${B.examples?`<div class="sec"><h2><i>示例</i>${B.exTitle||'操作示例'}</h2>${B.examples.map(e=>`<div class="ex"><h3>${e.h}</h3><table>${e.rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table></div>`).join('')}</div>`:''}
-    <div class="sec"><h2><i>完整版</i>完整流程，一步一步来</h2>${B.steps.map((s,k)=>`<div class="stp"><b>${k+1}</b><div>${s.t}${s.img?[].concat(s.img).map(src=>`<figure class="shotimg"><img src="${src}" alt="${esc(s.shot||'')}" loading="lazy"></figure>`).join(''):s.shot?`<div class="shot">📷 截图位：${s.shot}（待补）</div>`:''}</div></div>`).join('')}</div>
-    <div class="sec"><h2><i>坑</i>卡住了看这里</h2>${B.pits.map(p=>`<div class="pit"><div>${p[0]}</div><div>→ ${p[1]}</div></div>`).join('')}</div>
-    <div class="sec"><h2><i>完成</i>做到这样算完成</h2><ul class="dl">${B.done.map(x=>`<li>${x}</li>`).join('')}</ul></div>
-    ${B.junshi?`<div class="sec"><h2><i>军师库</i>56 个岗位军师，点开看，点「复制提示词」粘到 Codex</h2><div id="jsbox">加载中…</div></div>`:''}
-    ${TEA()?`<details class="sec notes" open><summary>讲师 / 助教备注</summary><ul>${B.notes.map(x=>`<li>${x}</li>`).join('')}</ul></details>`:''}`;
+  return `${TEA()&&B.verify?`<div class="fixbox"><b>⚠ 开课前要实测：</b>${B.verify}</div>`:''}<div class="sec" id="sx-quick"><h2><i>基础版</i>核心几步，人人都要做到</h2><ol class="ql">${B.quick.map(x=>`<li>${x}</li>`).join('')}</ol></div>
+    <div class="sec" id="sx-why"><h2><i>为什么</i>为什么要做这一步</h2><p class="body">${B.why}</p></div>
+    ${TEA()&&B.reveal?`<div class="sec reveal" id="sx-reveal"><h2><i>原理揭秘</i>这一步背后在干嘛</h2>${B.reveal.map(r=>`<div class="rv"><b>${r[0]}</b><p>${r[1]}</p></div>`).join('')}</div>`:''}
+    <div class="sec" id="sx-say"><h2><i>照着说</i>对 Codex 这么说，点一下就复制</h2><div>${B.say.map(x=>`<button class="qchip" data-copy="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>
+    ${B.examples?`<div class="sec" id="sx-ex"><h2><i>示例</i>${B.exTitle||'操作示例'}</h2>${B.examples.map(e=>`<div class="ex"><h3>${e.h}</h3><table>${e.rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table></div>`).join('')}</div>`:''}
+    <div class="sec" id="sx-steps"><h2><i>完整版</i>完整流程，一步一步来</h2>${B.steps.map((s,k)=>`<div class="stp" id="sx-step${k}"><b>${k+1}</b><div>${s.t}${s.img?[].concat(s.img).map(src=>`<figure class="shotimg"><img src="${src}" alt="${esc(s.shot||'')}" loading="lazy"></figure>`).join(''):s.shot?`<div class="shot">📷 截图位：${s.shot}（待补）</div>`:''}</div></div>`).join('')}</div>
+    <div class="sec" id="sx-pits"><h2><i>坑</i>卡住了看这里</h2>${B.pits.map(p=>`<div class="pit"><div>${p[0]}</div><div>→ ${p[1]}</div></div>`).join('')}</div>
+    <div class="sec" id="sx-done"><h2><i>完成</i>做到这样算完成</h2><ul class="dl">${B.done.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+    ${B.junshi?`<div class="sec" id="sx-junshi"><h2><i>军师库</i>56 个岗位军师，点开看，点「复制提示词」粘到 Codex</h2><div id="jsbox">加载中…</div></div>`:''}
+    ${TEA()?`<details class="sec notes" id="sx-notes" open><summary>讲师 / 助教备注</summary><ul>${B.notes.map(x=>`<li>${x}</li>`).join('')}</ul></details>`:''}`;
+}
+function secList(it){
+  const B=it.body,L=[['quick','基础版'],['why','为什么']];
+  if(TEA()&&B.reveal)L.push(['reveal','原理揭秘']);
+  L.push(['say','照着说']);
+  if(B.examples)L.push(['ex',B.exTitle?'示例':'操作示例']);
+  const out=L.map(([id,label])=>({id:'sx-'+id,label,l:1}));
+  out.push({id:'sx-steps',label:'完整版',l:1});
+  B.steps.forEach((st,k)=>out.push({id:'sx-step'+k,label:(k+1)+' '+(st.n||st.shot||st.t.replace(/[「」]/g,'').slice(0,10)),l:2}));
+  out.push({id:'sx-pits',label:'坑',l:1},{id:'sx-done',label:'完成标准',l:1});
+  if(B.junshi)out.push({id:'sx-junshi',label:'56 个军师',l:1});
+  if(TEA())out.push({id:'sx-notes',label:'讲师备注',l:1});
+  return out;
+}
+function secChips(it){return `<div class="secnav">${secList(it).filter(x=>x.l===1).map(x=>`<button data-goto="${x.id}">${x.label}</button>`).join('')}</div>`}
+function goSec(id){const el=document.getElementById(id);if(!el)return;S.lastGoto=id;document.body.classList.remove('tocopen');el.scrollIntoView({block:'start'});setTimeout(spy,30)}
+function spy(){
+  if(S.chan!=='b'||S.cview.type!=='citem')return;
+  const ids=[...document.querySelectorAll('#reader [id^="sx-"]')];let curId=null;
+  for(const el of ids){if(el.getBoundingClientRect().top<140)curId=el.id}
+  if(!curId&&ids[0])curId=ids[0].id;
+  const r=document.getElementById('reader'),atB=(r.scrollHeight>r.clientHeight+2&&r.scrollTop+r.clientHeight>=r.scrollHeight-4)||(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4);
+  if(atB&&S.lastGoto){const g=document.getElementById(S.lastGoto);if(g&&g.getBoundingClientRect().top<window.innerHeight)curId=S.lastGoto}
+  const top=curId&&curId.startsWith('sx-step')?'sx-steps':curId;
+  document.querySelectorAll('[data-goto]').forEach(x=>x.classList.toggle('on',x.dataset.goto===curId||(x.closest('.secnav')&&x.dataset.goto===top)||(x.classList.contains('l1')&&x.dataset.goto===top&&!document.querySelector('.subi.l2[data-goto="'+curId+'"]'))));
+  const chip=document.querySelector('.secnav button.on');if(chip&&chip.parentElement.scrollWidth>chip.parentElement.clientWidth)chip.parentElement.scrollLeft=chip.offsetLeft-60;
 }
 function pitsAllHTML(){
   let n=0;const parts=[];
@@ -837,12 +881,14 @@ async function fillJunshi(){
     <p class="jsm">你要给它：${esc(x.give)}　·　交回来：${esc(x.output)}　·　适合：${esc([].concat(x.industry).join('、'))}</p>
     <pre class="jsp">${esc(x.prompt)}</pre><button class="btn primary" data-copy="${esc(x.prompt)}">复制提示词</button></details>`).join(''):''}).join('');
 }
-function openC(v){S.cview=v;renderTree();renderReader();$('#reader').scrollTop=0;fillJunshi()}
+function campHash(){const v=S.cview;return '#camp'+(TEA()?'-t':'')+(v.type==='citem'?'/'+v.id:'')}
+function tocLabel(){const v=S.cview;const t=v.type==='citem'?citem(v.id).it:null;const b=v.type==='cblock'?CAMP.find(x=>x.id===v.id):null;return t?(t.no?t.no+' ':'')+t.t:b?b.name:'总览'}
+function openC(v){S.cview=v;document.body.classList.remove('tocopen');history.replaceState(null,'',campHash());renderTree();renderReader();$('#reader').scrollTop=0;window.scrollTo(0,0);$('#tocbar b').textContent=tocLabel();fillJunshi();spy();const tr=document.getElementById('tree'),cu=tr.querySelector('.it.on');if(cu)tr.scrollTop+=cu.getBoundingClientRect().top-tr.getBoundingClientRect().top-8}
 function setChan(c){
   S.chan=c;document.body.classList.toggle('camp',c==='b');
   document.querySelectorAll('#chans button').forEach(x=>x.classList.toggle('on',x.dataset.chan===c));
   $('#btag').textContent=c==='b'?'实训营 · 目录稿':'Demo v2 · ChatGPT';
-  history.replaceState(null,'',c==='b'?(TEA()?'#camp-t':'#camp'):location.pathname);
+  history.replaceState(null,'',c==='b'?campHash():location.pathname);
   renderTree();renderReader();$('#reader').scrollTop=0;fillJunshi();
 }
 
@@ -1072,13 +1118,16 @@ async function doAction(a,btn){
 
 /* ================= 事件 ================= */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-ver],[data-chan],[data-copy],[data-cdo],[data-cblock],[data-citem],[data-mode],[data-do],[data-ask],[data-card],[data-ch]');if(!t)return;
+  const t=e.target.closest('#tocbar,[data-ctog],[data-goto],[data-ver],[data-chan],[data-copy],[data-cdo],[data-cblock],[data-citem],[data-mode],[data-do],[data-ask],[data-card],[data-ch]');if(!t)return;
   if(t.disabled)return;
   if(t.dataset.chan){if(S.chan!==t.dataset.chan)setChan(t.dataset.chan);return}
-  if(t.dataset.ver){S.ver=t.dataset.ver;history.replaceState(null,'',TEA()?'#camp-t':'#camp');renderReader();fillJunshi();return}
+  if(t.dataset.ver){S.ver=t.dataset.ver;history.replaceState(null,'',campHash());renderTree();renderReader();fillJunshi();spy();return}
+  if(t.dataset.goto){goSec(t.dataset.goto);return}
+  if(t.dataset.ctog){e.stopPropagation();const id=t.dataset.ctog;S.openTouched.add(id);S.open.has(id)?S.open.delete(id):S.open.add(id);renderTree();spy();return}
+  if(t.id==='tocbar'){document.body.classList.toggle('tocopen');return}
   if(t.dataset.copy!==undefined){const o=t.textContent;(navigator.clipboard?navigator.clipboard.writeText(t.dataset.copy):Promise.reject()).then(()=>{t.textContent='已复制 ✓';setTimeout(()=>t.textContent=o,1200)}).catch(()=>{});return}
   if(t.dataset.cdo)return openC({type:t.dataset.cdo});
-  if(t.dataset.cblock)return openC({type:'cblock',id:t.dataset.cblock});
+  if(t.dataset.cblock){S.open.add(t.dataset.cblock);return openC({type:'cblock',id:t.dataset.cblock})}
   if(t.dataset.citem)return openC({type:'citem',id:t.dataset.citem});
   if(t.dataset.mode){if(S.mode!==t.dataset.mode)doAction(t.dataset.mode==='guide'?'start-guide':'free');return}
   if(t.dataset.do)return doAction(t.dataset.do,t);
@@ -1092,8 +1141,9 @@ $('#inp').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)ask($('#inp').value)}
 $('#topq').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)ask($('#topq').value)};
 
 /* ================= 启动 ================= */
+$('#reader').addEventListener('scroll',spy,{passive:true});window.addEventListener('scroll',spy,{passive:true});
 renderTree();renderReader();renderProg();updateCtx();
-(()=>{const m=location.hash.match(/^#camp(-t)?(?:\/(\w+))?$/);if(!m)return;if(m[1])S.ver='tea';setChan('b');if(m[2]&&citem(m[2]))openC({type:'citem',id:m[2]})})();
+(()=>{const m=location.hash.match(/^#camp(-t)?(?:\/(\w+))?$/);if(!m)return;if(m[1])S.ver='tea';setChan('b');if(m[2]&&citem(m[2]))openC({type:'citem',id:m[2]});else $('#tocbar b').textContent=tocLabel()})();
 (async()=>{
   await botSay(['我是杰哥的 AI 分身。口气是杰哥的，人不是。']);
   await botSay(['摸底下来，你用过 AI，建议从第 2 关「指挥它改」开始。','你想怎么学？跟着我一步步走，还是自己翻、卡住了再叫我？'],
