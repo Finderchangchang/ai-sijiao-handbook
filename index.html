@@ -188,6 +188,14 @@ body.camp .main{grid-template-columns:320px minmax(0,1fr)}
 .jsc summary span{color:var(--sub);font-size:13px}
 .jsm{font-size:13px;color:var(--sub);margin:8px 0}
 .jsp{white-space:pre-wrap;font-family:inherit;font-size:13px;background:#faf8f3;border-radius:8px;padding:10px 12px;margin:0 0 8px;line-height:1.8}
+.verbar{display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.verbar button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;cursor:pointer;font-size:12px;color:var(--sub)}
+.verbar button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.verbar span{font-size:12px;color:var(--sub)}
+.sec.reveal{border-color:#d0ebff;background:#f5fbff}
+.sec.reveal h2 i{color:var(--blue)}
+.rv{padding:8px 0;border-bottom:1px solid #e3f1fc}.rv:last-child{border-bottom:none}
+.rv b{display:block;font-size:15px}.rv p{font-size:15px;line-height:1.8;color:#343a40}
 .shotimg{margin:10px 0 16px}
 .shotimg img{display:block;max-width:100%;border:1px solid var(--line);border-radius:10px;box-shadow:0 4px 14px rgba(0,0,0,.06)}
 .shotimg figcaption{font-size:12px;color:var(--sub);margin-top:6px;text-align:center}
@@ -617,26 +625,35 @@ const CAMP=[
     ['担心它把客户信息发出去','skill 里加一条规矩：只整理，不发送、不登录别的系统']],
    done:['有一份你认可的标准结果','新开对话、换一份资料，skill 也能跑对','手机上说一句，电脑把那件事干完，结果发回手机'],
    notes:['时长 60 分钟：讲 5 分钟（三步方法：先教、再存、换资料再试）→ 教它干活 20 分钟 → 固化 10 分钟 → 换资料复测 10 分钟 → 装给 AI 员工、手机触发 15 分钟','前置：D2 上午 02 已上岗；客户表能导出（D1 下午 02 建的）','10-05 命令行实测：默认例子从初稿、纠正到固化都走通了，换第二份客户表重跑正确；手机触发等 Hermes 实测后补','讲这几句：「先教，再存，换资料再试。」「教到你满意，它才学得会。」「会了这一招，什么活都能交出去。」','方法讲解链到「AI 入门」频道：第 2 关指挥它改、第 4 关立规矩、第 5 关验收（第 5 关的卡还在补）','对应结营 08 后半段（手机一句话干完）和「送：自己的 skill」']}},
-  {id:'e4',no:'04',step:'6',t:'实战部署并上线自己的项目',poster:'实战部署并上线自己的项目 —— 完成核心项目部署上线，并掌握后续复制方法',do:'官网和小工具（网页版）发布到 GitHub → 手机关 Wi-Fi 用 4G 打开 → 走一遍小工具并提交 → 客户表里看到这条 → 学会改了内容怎么重新发布。小程序不发布，测试号预览就够',who:'柳',time:'11:30–12:10',body:{
-   quick:['接着前面：官网和小工具都在你电脑上做好了','对 Codex 说「下一步」，它把官网和小工具发布到 GitHub，给你一个网址','手机关掉 Wi-Fi，用 4G 打开这个网址','走一遍小工具，提交一次，去客户表里看到这条','改一句文案，让它再发布一次，学会以后怎么更新'],
-   why:'前面做的东西都还在你自己电脑上，客户看不到。这一节把官网和小工具发到网上，拿到一个手机能打开的网址，可以发给客户、做成二维码（在微信里能不能直接打开，开课前实测）。用的是 GitHub 的免费网页空间：不花钱、不用买服务器、不用备案。小程序只做到测试号，不发布：正式上架要认证、审核、备案，成本高，课后真有需要再做。自己的域名也放到课后。',
-   say:['下一步。','网址发我，我用手机试一下。','招牌套餐改成 178 元，同步到官网，再发布一次。','我 GitHub 上已经有个人网站了，别动它。','手机打不开，帮我查一下。'],
+  {id:'e4',no:'04',step:'6',t:'实战部署并上线自己的项目',poster:'实战部署并上线自己的项目 —— 完成核心项目部署上线，并掌握后续复制方法',do:'官网和小工具（网页版）上传到 GitHub → 手机关 Wi-Fi 用流量打开 → 当一回客户提交一次 → 客户表里看到这条 → 学会改了内容怎么重新上传。小程序不上线，测试号预览就够',who:'柳',time:'11:30–12:10',body:{
+   quick:['说「下一步」，Codex 把官网和小工具上传到网上（它自己传，你不用动手）','等 1–3 分钟，它给你一个网址','手机关掉 Wi-Fi，用流量打开这个网址','在官网上点小工具，当一回客户，提交一次','打开飞书客户表，看到刚才那条，就通了'],
+   why:'官网和小工具现在只在你自己电脑里，就像菜做好了还在自家厨房，客户吃不到。这一步把它们放到网上，拿到一个网址，发给谁都能打开。放在 GitHub 上，免费，不用买服务器。',
+   reveal:[
+    ['「上传到 GitHub」到底是什么？','Codex 把「发布」文件夹整个传上去，跟网盘同步一个意思，不是复制粘贴。以后改了内容再传一次，网址不变，内容变新。'],
+    ['GitHub 是什么？','一个放网站文件的网站，每个账号送一块免费空间，传上去就能用网址打开。好比商场送你一个铺位，不收租。'],
+    ['为什么要关 Wi-Fi 测？','你家网络能打开，不代表客户能打开。用流量打开一次，才算真的放到网上了。'],
+    ['小程序为什么不上线？','正式上架要企业认证、审核、备案，至少一两周，课上做不完。今天只用测试号在自己手机上看。'],
+    ['老板常问：要钱吗？','不要。'],
+    ['老板常问：别人能改我的网站吗？','不能。只有登录了你 GitHub 账号的电脑能上传。'],
+    ['老板常问：能换成我自己的域名吗？','能，课后再绑。国内要访问更稳，课后迁到国内服务器并备案。']],
+   say:['下一步。','网址发我。','手机打不开，帮我看看。','招牌套餐改成 178 元，改到官网上，再上传一次。','我 GitHub 上原来有个网站，别动它。'],
    steps:[
-    {t:'确认课前已经登录 GitHub 工具（课前准备 0.4）。没登录就请助教。'},
-    {t:'说「下一步」。它先查你 GitHub 上有没有个人网站：有就另建一个新的，不动原来的；万一它要动原来的，马上点停止。然后把官网和小工具放进「发布」文件夹，只放网页要用的文件，企业档案、客户表不会传上去。',shot:'准备发布'},
-    {t:'它推到 GitHub 并打开网页功能，等 1–3 分钟，给你一个网址，长这样：https://你的用户名.github.io/品牌名/',shot:'拿到网址'},
-    {t:'手机关掉 Wi-Fi，用 4G 打开网址：首页能看、按钮能点、图片不慢。',shot:'手机 4G 打开官网'},
-    {t:'点进小工具走一遍，最后提交表单，名字写「测试」开头。然后打开飞书客户表，看到这一条就通了。',shot:'客户表里的测试记录'},
-    {t:'学会更新：改档案里一项信息，例如「招牌套餐改成 178 元」，再说「把这个改动同步到官网，再发布一次」。过一两分钟刷新网址，手机上能看到新价格。以后改价格、换照片，都是这一句话。',shot:'改完重新发布'}],
+    {t:'确认课前登录过 GitHub（课前准备 0.4）。没登录，叫助教。'},
+    {t:'说「下一步」。Codex 先看你 GitHub 上原来有没有网站：有就另开一个，不碰原来的。然后它把官网和小工具上传上去，只传网页，企业档案和客户表不会传。看到它要动原来的网站，马上点停止。',shot:'Codex 在上传'},
+    {t:'等 1–3 分钟，它发你一个网址，长这样：https://你的用户名.github.io/品牌名/',shot:'拿到网址'},
+    {t:'拿手机，关掉 Wi-Fi，用流量打开这个网址。官网能看、按钮点得动，就对了。',shot:'手机打开官网'},
+    {t:'当一回客户：在官网上点「算算套餐预算」，就是你下午做的小工具。选人数，点「计算」，再点「打开客户表单」，名字填「测试」，留个电话，点提交。',shot:'在手机上提交一次'},
+    {t:'打开飞书客户表，看到刚才那条「测试」，说明客户从看到官网到留下电话，这条路通了。',shot:'客户表里的测试记录'},
+    {t:'以后要改：先改档案，比如「招牌套餐改成 178 元」，再说「改到官网上，再上传一次」。一两分钟后刷新网址，就是新价格。网址不变。',shot:'改完再上传'}],
    pits:[
-    ['它说 GitHub 没登录','助教在旁边指导，登录和授权都由你本人点'],
-    ['等了 5 分钟还打不开','让它查一下网页功能开了没有；网址末尾要带「/品牌名/」'],
-    ['它要动你原来的个人网站','马上点停止，跟它说「别动原来的，另建一个」，并叫助教'],
-    ['手机 4G 打不开 github.io','换一家运营商的网络再试；还不行，用主办方的备用服务器'],
-    ['客户表里没看到提交的那条','检查小工具最后一步的表单链接，是不是你自己那份'],
-    ['想用自己的域名','课后再绑，课后操作文档里有']],
-   done:['手机关 Wi-Fi，用 4G 能打开你的官网和小工具','从小工具提交的一条测试信息，出现在你的飞书客户表里','改了档案里的一个价格，同步到官网并重新发布，手机上看到了新价格'],
-   notes:['时长 40 分钟：讲 3 分钟 → 发布 10 分钟 → 手机 4G 验证 10 分钟 → 表单提交验证 7 分钟 → 学会更新 10 分钟','前置：课前 GitHub 已登录；官网、小工具做完；客户表单已接上','10-05 实测：命令行和桌面版都发布成功。当时发现「会强推覆盖已有个人网站」的隐患，skill 已改成另建，个人网站没被动','小程序不发布：测试号预览即可，正式上架放课后（认证、审核、备案成本高）','兜底：GitHub 推不上去的，用主办方服务器二级域名','对应结营 02（手机 4G 能打开）和 03（提交进了客户表）']}}]},
+    ['它说 GitHub 没登录','叫助教，登录那一下你自己点'],
+    ['等了 5 分钟还打不开','让它查一下；网址最后要带「/品牌名/」'],
+    ['它要动你原来的网站','马上点停止，说「别动原来的，另开一个」'],
+    ['手机用流量打不开','换个运营商的手机试；还不行，用主办方的备用网址'],
+    ['客户表里没看到那条','看小工具最后那个表单，是不是你自己那份'],
+    ['想用自己的域名','课后再弄']],
+   done:['手机用流量能打开你的官网和小工具','提交的「测试」出现在你的飞书客户表里','改了一个价格，网上也跟着变了'],
+   notes:['时长 40 分钟：讲 3 分钟 → 上传 10 分钟 → 手机打开 10 分钟 → 提交一次、看客户表 7 分钟 → 改价格再上传 10 分钟','前置：课前登录过 GitHub；官网、小工具做完；客户表单已接上','10-05 实测：命令行和桌面版都上线成功；当时发现「会覆盖已有个人网站」，skill 已改成另开一个，个人网站没被动','兜底：GitHub 传不上去的，用主办方服务器的二级域名','对应结营 01（改价格网上跟着变）、02（手机能打开）、03（提交进了客户表）']}}]},
  {id:'d2pm',icon:'2下',name:'D2 下午 · 企业工作流与数字人',full:'DAY 2 下午｜企业 AI 工作流与数字人实战',goal:'下午结束：一个真实、有内容、具备流量潜力的数字人作品',items:[
   {id:'f1',no:'01',step:'14',t:'感受完整的企业 AI 工作流',poster:'感受完整的企业 AI 工作流 —— 打通选题、文案、内容生产与投流分析',fix:'投流分析现场不做',do:'先看讲师 10 分钟跑完整条链（看数据 → 选题 → 口播稿 → 数字人 → 剪辑 → 封面）→ 自己跑前半段：照档案出 7 个选题 → 挑 1 个写 60 秒口播稿 → Codex 出封面。口播稿留给下午数字人拍摄用',who:'柳 + 悦姐',time:'13:30–14:10',body:{
    quick:['看讲师 10 分钟把整条链跑一遍：看数据 → 选题 → 口播稿 → 数字人 → 剪辑 → 封面','说「下一步」，照你的档案出 7 个选题','挑 1 个，让它写成 60 秒口播稿','让 Codex 出一张竖版封面','口播稿留着，下午拍数字人用'],
@@ -737,7 +754,9 @@ const card=id=>CARDS.find(c=>c.id===id);
 const lvl=id=>LEVELS.find(l=>l.id===id);
 const lvName=id=>id===9?'进阶':'第 '+id+' 关 · '+lvl(id).name;
 
-const S={view:{type:'home'},seen:new Set(),did:new Set(),mode:null,pi:0,busy:false,chan:'a',cview:{type:'chome'}};
+const S={view:{type:'home'},seen:new Set(),did:new Set(),mode:null,pi:0,busy:false,chan:'a',cview:{type:'chome'},ver:'stu'};
+const TEA=()=>S.ver==='tea';
+const verBar=()=>`<div class="verbar"><button data-ver="stu" class="${TEA()?'':'on'}">学员版</button><button data-ver="tea" class="${TEA()?'on':''}">讲师版（给悦姐）</button><span>${TEA()?'多了原理揭秘、海报对照和讲师备注':'只看怎么做'}</span></div>`;
 
 /* ================= 频道 B：渲染 ================= */
 function campTree(){
@@ -755,10 +774,10 @@ function campReader(){
   if(v.type==='chome'){
     const n=CFLAT.length;
     return `<div class="inner">
-      <div class="crumb">实训营 · 总览</div>
+      ${verBar()}<div class="crumb">实训营 · 总览</div>
       <h1 class="rtitle">AI控制AI 商业闭环实训营<br>学员手册</h1>
       <p class="lead">D1、D2 和结营的分段、编号、顺序都跟海报一致，海报上一条就是一节；标题写的是现场实际做的事。课前、课后、卡住了是海报之外补的。现在是目录稿，正文等目录定了再写。</p>
-      <div class="fixbox"><b>⚠ 海报口径要改：${CFLAT.filter(id=>citem(id).it.fix).length} 处。</b>海报说法和现场实际做法对不上的节，目录里标了 ⚠，点进去能看到差在哪、建议怎么改。</div>
+      ${TEA()?`<div class="fixbox"><b>⚠ 海报口径要改：${CFLAT.filter(id=>citem(id).it.fix).length} 处。</b>海报说法和现场实际做法对不上的节，目录里标了 ⚠，点进去能看到差在哪、建议怎么改。</div>`:''}
       <div class="meta"><span>2 天 1 夜</span><span>·</span><span>一人一电脑现场实操</span><span>·</span><span>共 ${n} 节</span><span>·</span><span>目录稿 2026-10-24</span></div>
       <div class="sec"><h2><i>01</i>两天一夜怎么走</h2>
         <div class="list">${CAMP.map(b=>`<div class="lrow" data-cblock="${b.id}"><span class="ch-icon w">${b.icon}</span><span class="lt">${b.full}<br><small style="color:var(--sub);font-weight:400">${b.goal}</small></span><span class="ls">${b.items.length} 节</span></div>`).join('')}</div></div>
@@ -771,7 +790,7 @@ function campReader(){
   if(v.type==='cblock'){
     const b=CAMP.find(x=>x.id===v.id);
     return `<div class="inner">
-      <div class="crumb"><a data-cdo="chome">实训营</a> / ${b.name}</div>
+      ${verBar()}<div class="crumb"><a data-cdo="chome">实训营</a> / ${b.name}</div>
       <h1 class="rtitle">${b.full}</h1>
       <div class="goalbox"><span>这一段结束带走</span>${b.goal}</div>
       <div class="list">${b.items.map(it=>`<div class="lrow" data-citem="${it.id}"><span class="ln">${it.no||'·'}</span><span class="lt">${it.t}${whoTag(it.who)}</span><span class="ls">${it.time||''}</span></div>`).join('')}</div>
@@ -779,12 +798,12 @@ function campReader(){
   }
   const {b,it}=citem(v.id),i=CFLAT.indexOf(v.id),prev=CFLAT[i-1],next=CFLAT[i+1];
   return `<div class="inner">
-    <div class="crumb"><a data-cdo="chome">实训营</a> / <a data-cblock="${b.id}">${b.name}</a> / ${it.t}</div>
+    ${verBar()}<div class="crumb"><a data-cdo="chome">实训营</a> / <a data-cblock="${b.id}">${b.name}</a> / ${it.t}</div>
     <h1 class="rtitle">${it.no?it.no+' ':''}${it.t}</h1>
-    <div class="meta"><span>${b.full}</span>${it.time?`<span>·</span><span>${it.time}</span>`:''}<span>·</span><span>${it.who}</span>${it.step?`<span>·</span><span>助手里叫第 ${it.step} 步</span>`:''}<span>·</span><span>${it.body?'正文初稿':'目录稿 · 正文待写'}</span></div>
-    ${it.poster?`<div class="sec"><h2><i>海报</i>海报原文</h2><div class="quote">${it.poster}</div></div>`:''}
-    ${it.fix?`<div class="fixbox"><b>⚠ 海报口径要改：</b>${it.fix}</div>`:''}
-    <div class="sec"><h2><i>现场</i>这一节实际做什么</h2><div class="actbox">${it.do}</div>${it.use?`<p class="body" style="font-size:13px;color:var(--sub)">用在：${it.use}</p>`:''}</div>
+    <div class="meta"><span>${b.full}</span>${it.time?`<span>·</span><span>${it.time}</span>`:''}<span>·</span><span>${it.who}</span>${it.step?`<span>·</span><span>助手里叫第 ${it.step} 步</span>`:''}${TEA()?`<span>·</span><span>${it.body?'正文初稿':'目录稿 · 正文待写'}</span>`:''}</div>
+    ${TEA()&&it.poster?`<div class="sec"><h2><i>海报</i>海报原文</h2><div class="quote">${it.poster}</div></div>`:''}
+    ${TEA()&&it.fix?`<div class="fixbox"><b>⚠ 海报口径要改：</b>${it.fix}</div>`:''}
+    ${TEA()||!it.body?`<div class="sec"><h2><i>现场</i>这一节实际做什么</h2><div class="actbox">${it.do}</div>${it.use?`<p class="body" style="font-size:13px;color:var(--sub)">用在：${it.use}</p>`:''}</div>`:''}
     ${it.id==='s1'?pitsAllHTML():it.body?bodyHTML(it.body):`<div class="sec todo"><h2><i>待写</i>正文会写的 6 栏</h2><div class="flow">${['基础版','为什么','照着说','完整版（截图）','坑','做到这样算完成'].map(x=>`<span>${x}</span>`).join('')}</div></div>`}
     <div class="navrow">
       ${prev?`<button class="navbtn" data-citem="${prev}"><small>← 上一节</small>${citem(prev).it.t}</button>`:''}
@@ -792,15 +811,16 @@ function campReader(){
     </div></div>`;
 }
 function bodyHTML(B){
-  return `${B.verify?`<div class="fixbox"><b>⚠ 开课前要实测：</b>${B.verify}</div>`:''}<div class="sec"><h2><i>基础版</i>核心几步，人人都要做到</h2><ol class="ql">${B.quick.map(x=>`<li>${x}</li>`).join('')}</ol></div>
+  return `${TEA()&&B.verify?`<div class="fixbox"><b>⚠ 开课前要实测：</b>${B.verify}</div>`:''}<div class="sec"><h2><i>基础版</i>核心几步，人人都要做到</h2><ol class="ql">${B.quick.map(x=>`<li>${x}</li>`).join('')}</ol></div>
     <div class="sec"><h2><i>为什么</i>为什么要做这一步</h2><p class="body">${B.why}</p></div>
+    ${TEA()&&B.reveal?`<div class="sec reveal"><h2><i>原理揭秘</i>这一步背后在干嘛</h2>${B.reveal.map(r=>`<div class="rv"><b>${r[0]}</b><p>${r[1]}</p></div>`).join('')}</div>`:''}
     <div class="sec"><h2><i>照着说</i>对 Codex 这么说，点一下就复制</h2><div>${B.say.map(x=>`<button class="qchip" data-copy="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>
     ${B.examples?`<div class="sec"><h2><i>示例</i>${B.exTitle||'操作示例'}</h2>${B.examples.map(e=>`<div class="ex"><h3>${e.h}</h3><table>${e.rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table></div>`).join('')}</div>`:''}
     <div class="sec"><h2><i>完整版</i>完整流程，一步一步来</h2>${B.steps.map((s,k)=>`<div class="stp"><b>${k+1}</b><div>${s.t}${s.img?[].concat(s.img).map(src=>`<figure class="shotimg"><img src="${src}" alt="${esc(s.shot||'')}" loading="lazy"></figure>`).join(''):s.shot?`<div class="shot">📷 截图位：${s.shot}（待补）</div>`:''}</div></div>`).join('')}</div>
     <div class="sec"><h2><i>坑</i>卡住了看这里</h2>${B.pits.map(p=>`<div class="pit"><div>${p[0]}</div><div>→ ${p[1]}</div></div>`).join('')}</div>
     <div class="sec"><h2><i>完成</i>做到这样算完成</h2><ul class="dl">${B.done.map(x=>`<li>${x}</li>`).join('')}</ul></div>
     ${B.junshi?`<div class="sec"><h2><i>军师库</i>56 个岗位军师，点开看，点「复制提示词」粘到 Codex</h2><div id="jsbox">加载中…</div></div>`:''}
-    <details class="sec notes"><summary>讲师 / 助教备注（学员不用看）</summary><ul>${B.notes.map(x=>`<li>${x}</li>`).join('')}</ul></details>`;
+    ${TEA()?`<details class="sec notes" open><summary>讲师 / 助教备注</summary><ul>${B.notes.map(x=>`<li>${x}</li>`).join('')}</ul></details>`:''}`;
 }
 function pitsAllHTML(){
   let n=0;const parts=[];
@@ -822,7 +842,7 @@ function setChan(c){
   S.chan=c;document.body.classList.toggle('camp',c==='b');
   document.querySelectorAll('#chans button').forEach(x=>x.classList.toggle('on',x.dataset.chan===c));
   $('#btag').textContent=c==='b'?'实训营 · 目录稿':'Demo v2 · ChatGPT';
-  history.replaceState(null,'',c==='b'?'#camp':location.pathname);
+  history.replaceState(null,'',c==='b'?(TEA()?'#camp-t':'#camp'):location.pathname);
   renderTree();renderReader();$('#reader').scrollTop=0;fillJunshi();
 }
 
@@ -1052,9 +1072,10 @@ async function doAction(a,btn){
 
 /* ================= 事件 ================= */
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-chan],[data-copy],[data-cdo],[data-cblock],[data-citem],[data-mode],[data-do],[data-ask],[data-card],[data-ch]');if(!t)return;
+  const t=e.target.closest('[data-ver],[data-chan],[data-copy],[data-cdo],[data-cblock],[data-citem],[data-mode],[data-do],[data-ask],[data-card],[data-ch]');if(!t)return;
   if(t.disabled)return;
   if(t.dataset.chan){if(S.chan!==t.dataset.chan)setChan(t.dataset.chan);return}
+  if(t.dataset.ver){S.ver=t.dataset.ver;history.replaceState(null,'',TEA()?'#camp-t':'#camp');renderReader();fillJunshi();return}
   if(t.dataset.copy!==undefined){const o=t.textContent;(navigator.clipboard?navigator.clipboard.writeText(t.dataset.copy):Promise.reject()).then(()=>{t.textContent='已复制 ✓';setTimeout(()=>t.textContent=o,1200)}).catch(()=>{});return}
   if(t.dataset.cdo)return openC({type:t.dataset.cdo});
   if(t.dataset.cblock)return openC({type:'cblock',id:t.dataset.cblock});
@@ -1072,7 +1093,7 @@ $('#topq').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)ask($('#topq').value
 
 /* ================= 启动 ================= */
 renderTree();renderReader();renderProg();updateCtx();
-if(location.hash==='#camp')setChan('b');
+(()=>{const m=location.hash.match(/^#camp(-t)?(?:\/(\w+))?$/);if(!m)return;if(m[1])S.ver='tea';setChan('b');if(m[2]&&citem(m[2]))openC({type:'citem',id:m[2]})})();
 (async()=>{
   await botSay(['我是杰哥的 AI 分身。口气是杰哥的，人不是。']);
   await botSay(['摸底下来，你用过 AI，建议从第 2 关「指挥它改」开始。','你想怎么学？跟着我一步步走，还是自己翻、卡住了再叫我？'],
