@@ -207,6 +207,13 @@ a.gl:hover{color:var(--accent)}
 .glitem .body{margin-top:-4px}.glu{font-size:13px;color:var(--sub);margin-top:6px}.glu a{color:var(--accent);cursor:pointer}
 .glitem.flash{animation:secflash 1.8s}
 [id^="gl-"]{scroll-margin-top:16px}
+.rwrap .inner{max-width:640px}
+.sh{font-weight:600;font-size:16px;line-height:1.7;color:var(--ink)}
+.sd{font-size:15px;line-height:1.85;color:#495057;margin-top:2px}
+.body.why{font-size:16px;line-height:1.9}.body.why+.body.why{margin-top:6px}
+.ql li{font-size:16px;line-height:2}
+.stp{margin-bottom:10px}
+.tag{display:inline-block;background:#f1ede4;border-radius:6px;padding:0 8px;margin:0 2px;font-size:.93em;line-height:1.75;color:var(--ink)}
 .verbar{display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap}
 .verbar button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;cursor:pointer;font-size:12px;color:var(--sub)}
 .verbar button.on{background:var(--ink);border-color:var(--ink);color:#fff}
@@ -392,51 +399,58 @@ const CAMP=[
   {id:'p6',no:'0.6',t:'交 3 样资料',do:'价目表、客户最常问的 10 个问题、几张产品或门店照片',use:'D1 上午 02、03',who:'学员自己'},
   {id:'p7',no:'0.7',t:'装机验收',do:'助教对照清单逐项核对并截图存档：ChatGPT 网页能登录且会员已到账、飞书和 ChatCut 能登录、GitHub 已登录、开发者工具已登录、输入法能语音，并确认电脑能打开 Hermes 官网（D2 现场要下载安装）。没过的单独约时间补',use:'—',who:'助教'}]},
  {id:'d1am',icon:'1上',name:'D1 上午 · 搭好 AI 开发环境',full:'DAY 1 上午｜搭好你的 AI 开发环境',goal:'上午结束：AI 开发环境 + 企业知识库 + 第一版官网',items:[
-  {id:'a1',no:'01',t:'安装官方版 Codex',poster:'安装官方版 Codex —— 掌握后续更新、升级与持续使用路径',do:'装 ChatGPT 桌面版（认准名字里没有 Classic 的）→ 用课前注册的邮箱登录 → 左上角切到 Codex（公众号那篇的第二、三步）→ 讲以后怎么更新升级 → 复制讲师发的工作区模板（实训营助手已在里面）→ 新建项目、点「信任文件夹」→ 说「用实训营助手（ai-camp）开始」',who:'柳',time:'09:00–09:30',body:{
-   quick:['打开微软商店搜 ChatGPT，装名字里没有 Classic 的那个（Mac 去官网下载）','用课前注册的邮箱登录，左上角切到 Codex','把讲师发的「工作区模板」文件夹复制一份，改成你的公司名（实训营助手已经放在里面）','在 Codex 里新建项目，选这个文件夹，点「信任文件夹」','说「用实训营助手（ai-camp）开始」'],
-   why:'Codex 是这两天的主力：写网页、做小工具、生图、写文案都靠它。它装在 ChatGPT 桌面版里，和你在网页上注册的是同一个账号。装好以后再给它装一个「实训营助手」：两天每一步怎么走、有什么规矩、做完怎么检查，都写在里面，你只要说「下一步」。Codex 更新很快，学会自己升级，回去才能一直用下去。',
+  {id:'a1',no:'01',t:'安装官方版 Codex',poster:'安装官方版 Codex —— 掌握后续更新、升级与持续使用路径',do:'装好 ChatGPT 桌面版，打开 Codex，让实训营助手带你开始。',who:'柳',time:'09:00–09:30',body:{
+   quick:['在微软商店装 ChatGPT 桌面版','用课前注册的邮箱登录','左上角切到 Codex','新建项目，选你的公司文件夹','说[[用实训营助手（ai-camp）开始]]'],
+   why:['这两天写网页、做工具、写文案，都是 Codex 在干活。','它就在 ChatGPT 桌面版里，账号是你课前注册的那个。'],
+   reveal:[
+    ['为什么要装桌面版，网页版不行？','网页版碰不到电脑里的文件。桌面版里的 Codex 能在公司文件夹里建文件、改文件。'],
+    ['实训营助手怎么起作用？','它是放在公司文件夹里的一套说明书。学员说「下一步」，Codex 先读说明书，再照着做。'],
+    ['为什么一定要点名「实训营助手」？','只说「开始」，Codex 不知道要上这门课，会当成普通聊天。点了名，它才去读说明书。'],
+    ['它会乱动电脑里别的东西吗？','不会。它只在学员选的那个公司文件夹里干活。「信任文件夹」就是允许它在这个文件夹里改东西。'],
+    ['以后怎么升级？','Windows 版跟着微软商店自动更新。Mac 版在菜单里检查更新。']],
    say:['用实训营助手（ai-camp）开始。','现在到哪了？','Codex 怎么更新到最新版？'],
    steps:[
-    {t:'Windows：打开「Microsoft Store」，搜 ChatGPT，认准发行方是 OpenAI、名字里没有 Classic 的那个，点安装。Mac：去 ChatGPT 官网下载桌面版。',shot:'微软商店里的 ChatGPT'},
-    {t:'打开 ChatGPT，点「继续登录」，在弹出的浏览器里填课前注册的邮箱，去邮箱拿验证码填回来；工作空间选「个人账户」。',shot:'登录 ChatGPT'},
-    {t:'回到 App，左上角下拉切到「Codex」，看到输入框就装好了。',shot:'切到 Codex'},
-    {t:'学会更新：Windows 版跟着微软商店自动更新，也可以在商店的「库」里手动点更新；Mac 版在菜单里检查更新。讲师现场演示一次。'},
-    {t:'把讲师发的「工作区模板」文件夹整个复制到电脑上（例如 D 盘），改名为你的公司名，例如「陶陶居AI工作区」。实训营助手已经放在里面的 .agents\\skills\\ai-camp 下（它是一个 skill，也就是一份教 AI 怎么干活的说明书），「资料」文件夹也建好了，不用自己建。Mac 上以「.」开头的文件夹默认看不到，也不好新建，所以由讲师提前建好。'},
-    {t:'在 Codex 里点「新建项目」，选刚才那个文件夹。弹出「信任此文件夹吗？」，点「信任文件夹」。',shot:'新建项目、选文件夹、信任',img:['assets/camp/a1-6a.png','assets/camp/a1-6b.png','assets/camp/a1-6c.png']},
-    {t:'在输入框说「用实训营助手（ai-camp）开始」。一定要点名实训营助手：只说「开始」两个字，它可能听不出你要上这门课（10-24 实测就没认出来）。它会建好进度表，然后问你公司全称和城市，这就进到下一节了。',shot:'说用实训营助手（ai-camp）开始',img:['assets/camp/a1-7a.png','assets/camp/a1-7b.png']}],
+    {n:'装桌面版',h:'在微软商店装 ChatGPT',t:'搜 ChatGPT，装发行方是 OpenAI、名字里没有 Classic 的那个。Mac 去 ChatGPT 官网下载。',shot:'微软商店里的 ChatGPT'},
+    {n:'登录',h:'用课前注册的邮箱登录',t:'点「继续登录」，填邮箱，去邮箱拿验证码填回来。工作空间选「个人账户」。',shot:'登录 ChatGPT'},
+    {n:'切到 Codex',h:'左上角切到 Codex',t:'看到输入框，就装好了。',shot:'切到 Codex'},
+    {n:'学会更新',h:'记住以后怎么更新',t:'Windows 版跟着微软商店自动更新。Mac 版在菜单里检查更新。'},
+    {n:'放好文件夹',h:'把讲师发的「工作区模板」复制到电脑上',t:'改成你的公司名，比如「陶陶居AI工作区」。实训营助手和「资料」文件夹都在里面了。'},
+    {n:'新建项目',h:'在 Codex 里新建项目，选这个文件夹',t:'弹出「信任此文件夹吗？」，点[[信任文件夹]]。',shot:'新建项目、选文件夹、信任',img:['assets/camp/a1-6a.png','assets/camp/a1-6b.png','assets/camp/a1-6c.png']},
+    {n:'开始',h:'说[[用实训营助手（ai-camp）开始]]',t:'它建好进度表，接着问你公司全称和城市。',shot:'它问公司名和城市',img:'assets/camp/a1-7b.png'}],
    pits:[
-    ['商店里搜到两个 ChatGPT','装没有 Classic 的那个；按公众号那篇的说法，显示「此产品在你的市场中未提供」的是旧版（开课前在中国区商店再确认一次）'],
-    ['登录时弹「电话号码是必填项」','网络稳定一般不会弹；弹了就用短信或 WhatsApp 验证，不行先用主办方的备用账号上课'],
-    ['它回「你想先做什么？」，没按实训营的路子走','你可能只说了「开始」。再说一遍「用实训营助手（ai-camp）开始」；还不行，检查 ai-camp 是不是放在 .agents\\skills\\ 下面，新开对话再说'],
-    ['后面它说没有权限改文件','项目没有设成信任：在项目设置里改成信任，或叫助教'],
-    ['提示额度不够','会员可能没到账，找助教查充值；先用主办方备用账号']],
-   done:['ChatGPT 桌面版里能切到 Codex','工作区文件夹建好了，实训营助手放进去了','说「用实训营助手（ai-camp）开始」后，它问你公司全称和城市','你知道以后怎么更新 Codex'],
-   notes:['时长 30 分钟：开场 5 分钟（两天带走 9 样东西）→ 装桌面版并登录 10 分钟 → 讲怎么更新 3 分钟 → 放 skill 包、建项目、点信任 10 分钟 → 说「用实训营助手（ai-camp）开始」2 分钟','课前只注册账号、充好会员，软件现场装；30 人同时下载，备好讲师热点','讲师现场发「工作区模板」（U 盘或群文件）：里面已建好 .agents\\skills\\ai-camp 和空的「资料」文件夹','对应结营 01：知道以后怎么升级 Codex']}},
-  {id:'a2',no:'02',step:'1',t:'让 AI 读懂你的公司，建企业知识库',poster:'让 AI 读懂你的电脑 —— 分析电脑、文件与工作环境，建立专属 AI 企业知识库',fix:'海报写「读懂你的电脑」。实际只读你交的资料和网上的公开信息，不扫整台电脑',do:'AI 先上网查你的公司，再看你交的资料，整理成一份「企业档案」；你核对一遍，错的当场改。',who:'柳',time:'09:30–10:20',body:{
-   quick:['把课前交的 3 样资料（价目表、常见问题、照片）拖进「资料」文件夹','在 Codex 里说出公司全称和城市','等 1 分钟左右，它会告诉你查到了什么','它请你核对，哪里不对直接说','打开「企业档案」看一眼，每条后面都写了从哪来的'],
-   why:'AI 不认识你的公司，不给它资料，它只能瞎猜。这一步就像给新员工一本公司手册：它上网查一遍，再加上你交的资料，整理成一份「企业档案」，你拍板。后面做官网、小工具、话术，事实都从这份档案里拿；档案对了，后面就不会错。',
+    ['商店里搜到两个 ChatGPT','装名字里没有 Classic 的那个'],
+    ['登录时要填手机号','网络稳定一般不会弹。弹了就用短信验证，不行先用主办方的备用账号'],
+    ['它回「你想先做什么？」','你可能只说了「开始」。再说一遍[[用实训营助手（ai-camp）开始]]'],
+    ['还是没按实训营走','叫助教，看看实训营助手放对位置没有'],
+    ['它说没有权限改文件','刚才没点「信任文件夹」，叫助教帮你改'],
+    ['提示额度不够','会员可能没到账，找助教']],
+   done:['ChatGPT 里能切到 Codex','说完开始那句话，它问你公司全称和城市','你知道以后怎么更新'],
+   notes:['时长 30 分钟：开场 5 分钟（两天带走 9 样东西）→ 装桌面版并登录 10 分钟 → 讲怎么更新 3 分钟 → 放工作区模板、建项目、点信任 10 分钟 → 说开始那句话 2 分钟','课前只注册账号、充好会员，软件现场装；30 人同时下载，备好讲师热点','讲师现场发「工作区模板」（U 盘或群文件）：里面已建好 .agents\\skills\\ai-camp 和空的「资料」文件夹。Mac 上以「.」开头的文件夹默认看不到，所以由讲师提前建好','对应结营 01：知道以后怎么升级 Codex']}},
+  {id:'a2',no:'02',step:'1',t:'让 AI 读懂你的公司，建企业知识库',poster:'让 AI 读懂你的电脑 —— 分析电脑、文件与工作环境，建立专属 AI 企业知识库',fix:'海报写「读懂你的电脑」。实际只读你交的资料和网上的公开信息，不扫整台电脑',do:'AI 上网查你的公司，加上你交的资料，整理成一份企业档案，你来核对。',who:'柳',time:'09:30–10:20',body:{
+   quick:['把价目表、常见问题、照片拖进「资料」文件夹','告诉 Codex 公司全称和城市','等它查，一般 1 分钟','它问你的几处，对的不管，错的直接说','打开企业档案看一眼'],
+   why:['AI 不认识你的公司，不给它资料，它只能瞎猜。','这一步给它一份企业档案。后面做官网、写话术，都照这份来。'],
    reveal:[
-    ['它从哪查的？','官网、公众号、地图和点评、工商信息、新闻。每条后面都写了出处，能点开核对。'],
-    ['海报写「读懂你的电脑」，真的会扫电脑吗？','不会。它只看你放进「资料」文件夹的东西和网上公开的信息，不翻电脑里别的文件。'],
-    ['为什么非要老板核对？','AI 会搜到同名的公司，或者网上的旧信息。价格、电话这些，以老板说的为准。'],
-    ['网上搜不到怎么办？','小店很常见。让老板对着电脑说 3 分钟：做什么、在哪、多少钱，它照样能整理出来。'],
-    ['它还顺手做了什么？','生成一份「工作区规矩」（文件名 AGENTS.md）：以后每一步只用档案里的事实、不编价格。老板不用管它。']],
+    ['它从哪查的？','官网、公众号、地图和点评、工商信息、新闻。每条后面都写了出处。'],
+    ['海报写「读懂你的电脑」，它会扫电脑吗？','不会。它只看「资料」文件夹和网上公开的信息。'],
+    ['为什么非要老板核对？','它可能搜到同名的公司，或者网上的旧信息。价格、电话以老板说的为准。'],
+    ['网上搜不到怎么办？','小店很常见。让老板对着电脑说 3 分钟，它照样能整理出来。'],
+    ['它还顺手做了什么？','生成一份工作区规矩：以后每一步只用档案里的事实，不编价格。老板不用管。']],
    say:['我的公司是 XXX，在 XX 市。','电话不对，是 XXX。','价格不对，是 XXX 元。','同名的那几家都不是，我们是 XX 区那家。','网上搜不到我们，我说一下：……','还有哪些没查到？列给我。'],
    steps:[
-    {n:'放资料',t:'打开工作区里的「资料」文件夹（工作区就是你电脑上那个公司文件夹），把价目表、常见问题、几张照片拖进去。价目表是拍的照片也行。',shot:'资料文件夹',img:'assets/camp/a2-1.png'},
-    {n:'说公司名',t:'回到 Codex，说出公司全称和城市，比如「陶陶居，在广州」。',shot:'回答公司名和城市',img:'assets/camp/a2-2.png'},
-    {n:'等它查',t:'等它查。一般 1 分钟左右，慢的四五分钟。'},
-    {n:'看查到什么',t:'它先告诉你查到了什么。比如陶陶居，它查到：1880 年创立，总店在第十甫路，还有总店电话。右边能看到它查了哪些网页。',shot:'AI 查到的信息',img:'assets/camp/a2-4.png'},
-    {n:'核对',t:'它会问你几处拿不准的，比如「你代表整个品牌，还是某一家门店」。对的不用管，不对的直接说，它当场改。',shot:'核对和纠正',img:'assets/camp/a2-5.png'},
-    {n:'看档案',t:'打开「企业档案」看一眼：每条后面都写了从哪来的，查不到的写着「待补」。',shot:'企业档案',img:'assets/camp/a2-6.png'}],
+    {n:'放资料',h:'把资料拖进「资料」文件夹',t:'价目表、常见问题、几张照片。价目表拍照也行。',shot:'资料文件夹',img:'assets/camp/a2-1.png'},
+    {n:'说公司名',h:'告诉 Codex 公司全称和城市',t:'比如：陶陶居，在广州。',shot:'回答公司名和城市',img:'assets/camp/a2-2.png'},
+    {n:'等它查',h:'等它查',t:'一般 1 分钟左右，慢的四五分钟。'},
+    {n:'看查到什么',h:'看它查到了什么',t:'比如陶陶居，它查到 1880 年创立、总店在第十甫路。右边能看到它查了哪些网页。',shot:'AI 查到的信息',img:'assets/camp/a2-4.png'},
+    {n:'核对',h:'回答它问的几处',t:'比如它会问：你代表整个品牌，还是某一家门店？对的不管，错的直接说，它当场改。',shot:'核对和纠正',img:'assets/camp/a2-5.png'},
+    {n:'看档案',h:'打开企业档案看一眼',t:'每条后面都写了出处。查不到的写着「待补」。',shot:'企业档案',img:'assets/camp/a2-6.png'}],
    pits:[
-    ['网上几乎搜不到','小店很常见。用微信输入法按住说 3 分钟：做什么、在哪、多少钱、客户常问什么'],
+    ['网上几乎搜不到','小店很常见。按住微信输入法说 3 分钟，它照样能整理'],
     ['搜到好几家同名的','它会列出来，你说是哪家'],
-    ['它写的价格和你的不一样','以你交的价目表为准，直接告诉它正确价格'],
+    ['价格跟你的不一样','以你交的价目表为准，直接告诉它'],
     ['档案里好多「待补」','它不敢编才写待补。挑要紧的说给它，其余课后补'],
-    ['等了 10 分钟没动静','举手叫助教'],
-    ['写进了别人家的事','直接说「这条不是我们，删掉」']],
-   done:['档案里自家的价格、电话、地址，你核对过，是对的','每条后面都写了从哪来的','查不到的写着「待补」，没有编的'],
+    ['等了 10 分钟没动静','叫助教'],
+    ['写进了别人家的事','说[[这条不是我们，删掉]]']],
+   done:['价格、电话、地址你都核对过','每条后面都有出处','查不到的写着待补，没有编的'],
    notes:['时长 50 分钟：讲师大屏演示 10 分钟（用悦姐的公司；前一天先做一遍留个备份，现场再演示一遍）→ 学员一起做 25 分钟（AI 查一般 1 分钟左右，其余时间核对）→ 抽 2 人说说 AI 查到了哪些自己都忘了的信息 10 分钟 → 收尾 5 分钟','讲这几句：「AI 不认识你，它只会猜。」「档案是后面所有东西的地基。」「网上搜不到不丢人，正好说明你需要官网。」「AI 说的你都要核一遍。」','10-24 实测（GPT-6 Luna，陶陶居）：查资料加整理档案 44 秒','课前：助教检查每人的 3 样资料交齐；30 人同时查会慢，慢的人先看大屏','常见：学员照抄讲师演示里的价格 → 删掉换自己的；整份都是待补 → 让他口述 3 分钟','对应结营 01：能答对自家价格；「改一项信息、同步到官网」在 D2 上午 04 上线时练']}},
   {id:'a3',no:'03',step:'2',t:'从 0 搭建第一个官网',poster:'从 0 搭建第一个官网 —— 让自己的产品和业务拥有独立展示入口',do:'说清给谁看、看完做什么、喜欢什么样 → 出初稿（图片先用你交的照片）→ 指挥它改一版 → 手机尺寸看一遍',who:'柳',time:'10:30–11:20',body:{
    quick:['说「下一步」','回答 3 件事：给谁看、看完让他干什么、喜欢什么样（有喜欢的网站就发链接或截图）','等它出初稿，右边直接能看','挑一处最不满意的，说清改哪、改成什么样','手机宽度看一遍，按钮都点一下'],
@@ -890,15 +904,16 @@ function campReader(){
       ${next?`<button class="navbtn r" data-citem="${next}"><small>下一节 →</small>${citem(next).it.t}</button>`:''}
     </div></div></div>`;
 }
+const fmt=x=>String(x).replace(/\[\[(.+?)\]\]/g,'<span class="tag">$1</span>');
 function bodyHTML(B){
-  return `${TEA()&&B.verify?`<div class="fixbox"><b>⚠ 开课前要实测：</b>${B.verify}</div>`:''}<div class="sec" id="sx-quick"><h2><i>基础版</i>核心几步，人人都要做到</h2><ol class="ql">${B.quick.map(x=>`<li>${x}</li>`).join('')}</ol></div>
-    <div class="sec" id="sx-why"><h2><i>为什么</i>为什么要做这一步</h2><p class="body">${B.why}</p></div>
-    ${TEA()&&B.reveal?`<div class="sec reveal" id="sx-reveal"><h2><i>原理揭秘</i>这一步背后在干嘛</h2>${B.reveal.map(r=>`<div class="rv"><b>${r[0]}</b><p>${r[1]}</p></div>`).join('')}</div>`:''}
+  return `${TEA()&&B.verify?`<div class="fixbox"><b>⚠ 开课前要实测：</b>${B.verify}</div>`:''}<div class="sec" id="sx-quick"><h2><i>基础版</i>核心几步，人人都要做到</h2><ol class="ql">${B.quick.map(x=>`<li>${fmt(x)}</li>`).join('')}</ol></div>
+    <div class="sec" id="sx-why"><h2><i>为什么</i>为什么要做这一步</h2>${[].concat(B.why).map(p=>`<p class="body why">${fmt(p)}</p>`).join('')}</div>
+    ${TEA()&&B.reveal?`<div class="sec reveal" id="sx-reveal"><h2><i>原理揭秘</i>这一步背后在干嘛</h2>${B.reveal.map(r=>`<div class="rv"><b>${r[0]}</b><p>${fmt(r[1])}</p></div>`).join('')}</div>`:''}
     <div class="sec" id="sx-say"><h2><i>照着说</i>对 Codex 这么说，点一下就复制</h2><div>${B.say.map(x=>`<button class="qchip" data-copy="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>
     ${B.examples?`<div class="sec" id="sx-ex"><h2><i>示例</i>${B.exTitle||'操作示例'}</h2>${B.examples.map(e=>`<div class="ex"><h3>${e.h}</h3><table>${e.rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table></div>`).join('')}</div>`:''}
-    <div class="sec" id="sx-steps"><h2><i>完整版</i>完整流程，一步一步来</h2>${B.steps.map((s,k)=>`<div class="stp" id="sx-step${k}"><b>${k+1}</b><div>${s.t}${s.img?[].concat(s.img).map(src=>`<figure class="shotimg"><img src="${src}" alt="${esc(s.shot||'')}" loading="lazy"></figure>`).join(''):s.shot?`<div class="shot">📷 截图位：${s.shot}（待补）</div>`:''}</div></div>`).join('')}</div>
-    <div class="sec" id="sx-pits"><h2><i>坑</i>卡住了看这里</h2>${B.pits.map(p=>`<div class="pit"><div>${p[0]}</div><div>→ ${p[1]}</div></div>`).join('')}</div>
-    <div class="sec" id="sx-done"><h2><i>完成</i>做到这样算完成</h2><ul class="dl">${B.done.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+    <div class="sec" id="sx-steps"><h2><i>完整版</i>完整流程，一步一步来</h2>${B.steps.map((s,k)=>`<div class="stp" id="sx-step${k}"><b>${k+1}</b><div>${s.h?`<div class="sh">${fmt(s.h)}</div>${s.t?`<p class="sd">${fmt(s.t)}</p>`:''}`:s.t}${s.img?[].concat(s.img).map(src=>`<figure class="shotimg"><img src="${src}" alt="${esc(s.shot||'')}" loading="lazy"></figure>`).join(''):s.shot?`<div class="shot">📷 截图位：${s.shot}（待补）</div>`:''}</div></div>`).join('')}</div>
+    <div class="sec" id="sx-pits"><h2><i>坑</i>卡住了看这里</h2>${B.pits.map(p=>`<div class="pit"><div>${p[0]}</div><div>→ ${fmt(p[1])}</div></div>`).join('')}</div>
+    <div class="sec" id="sx-done"><h2><i>完成</i>做到这样算完成</h2><ul class="dl">${B.done.map(x=>`<li>${fmt(x)}</li>`).join('')}</ul></div>
     ${B.junshi?`<div class="sec" id="sx-junshi"><h2><i>军师库</i>56 个岗位军师，点开看，点「复制提示词」粘到 Codex</h2><div id="jsbox">加载中…</div></div>`:''}
     ${TEA()?`<details class="sec notes" id="sx-notes" open><summary>讲师 / 助教备注</summary><ul>${B.notes.map(x=>`<li>${x}</li>`).join('')}</ul></details>`:''}`;
 }
@@ -940,7 +955,7 @@ function linkTerms(){
   keys.sort((a,b)=>b[0].length-a[0].length);
   const re=new RegExp(keys.map(x=>x[0].replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'));
   const map=Object.fromEntries(keys),done=new Set();
-  const skip='h1,h2,h3,button,a,.verbar,.crumb,.meta,figure,pre,summary,.quote,.jsc,.secnav,.navrow,.posterbox';
+  const skip='.tag,.sh,h1,h2,h3,button,a,.verbar,.crumb,.meta,figure,pre,summary,.quote,.jsc,.secnav,.navrow,.posterbox';
   const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement.closest(skip)?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
   const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
   for(let node of nodes){
