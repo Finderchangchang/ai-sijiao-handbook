@@ -234,6 +234,27 @@ details.notes ul{margin-top:10px;padding-left:20px;font-size:14px;line-height:1.
 
 @media(max-width:1180px){.main{grid-template-columns:220px minmax(0,1fr) 340px}body.camp .main{grid-template-columns:260px minmax(0,1fr)}.reader{padding:28px 26px 60px}.tiles{grid-template-columns:1fr}.lvgrid{grid-template-columns:1fr}}
 @media(max-width:900px){body.camp .reader{overflow:visible}body.camp #tocbar{display:flex;gap:6px;align-items:center;width:100%;border:none;border-bottom:1px solid var(--line);background:#faf8f3;padding:10px 14px;font:inherit;font-size:13px;color:var(--sub);cursor:pointer;text-align:left}body.camp #tocbar b{color:var(--ink);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}body.camp .toc{display:none;max-height:none}body.camp.tocopen .toc{display:block}body.camp .secnav{display:flex;gap:6px;overflow-x:auto;position:sticky;top:0;z-index:5;background:var(--paper);padding:8px 0;margin:0 0 12px;border-bottom:1px solid var(--line);scrollbar-width:none}body.camp .secnav::-webkit-scrollbar{display:none}.secnav button{flex:none;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;font-size:12.5px;color:var(--sub);cursor:pointer}.secnav button.on{background:var(--accent);border-color:var(--accent);color:#fff}body.camp [id^="sx-"]{scroll-margin-top:60px}.top{gap:8px;padding:0 10px}.tag,.me{display:none}.brand{font-size:14px;gap:6px}.logo{width:28px;height:28px}.chans{margin-left:auto}.chans button{padding:5px 8px;font-size:12px}.main,body.camp .main{grid-template-columns:1fr;height:auto}.reader{padding:20px 14px 50px}.sec{padding:16px 14px}.rtitle{font-size:26px}.pit{grid-template-columns:1fr}.toc{max-height:280px;border-right:none;border-bottom:1px solid var(--line)}.chat{height:85vh;border-left:none;border-top:1px solid var(--line)}.search{display:none}}
+/* 本节导航列：整屏三栏，半屏两栏（目录收进按钮），手机隐藏 */
+.pnav{display:none}
+body.camp.haspnav .main{grid-template-columns:290px 190px minmax(0,1fr)}
+body.camp.haspnav .pnav{display:flex;flex-direction:column;border-right:1px solid var(--line);background:#fcfbf8;overflow:auto;padding:20px 10px 14px}
+.pn-title{font-size:12px;color:var(--sub);font-family:var(--mono);margin:0 8px 10px;display:flex;align-items:center;gap:6px}
+.pn-title::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.pnav .subi{font-size:13px;padding:6px 10px}
+.pnav .subi.l2{font-size:12.5px;padding-left:22px}
+#tocbtn{display:none}
+@media(max-width:1200px){
+  body.camp.haspnav .main{grid-template-columns:190px minmax(0,1fr)}
+  body.camp.haspnav .toc{display:none;position:fixed;left:0;top:60px;bottom:0;width:300px;z-index:30;box-shadow:6px 0 24px rgba(0,0,0,.12)}
+  body.camp.haspnav.tocopen .toc{display:block}
+  body.camp.haspnav #tocbtn{display:block;margin-top:auto;border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 10px;font:inherit;font-size:13px;color:var(--ink);cursor:pointer;text-align:left}
+  body.camp.haspnav.tocopen #tocbtn{border-color:var(--accent);color:var(--accent)}
+}
+@media(max-width:900px){
+  body.camp .pnav,body.camp.haspnav .pnav{display:none}
+  body.camp.haspnav .main{grid-template-columns:1fr}
+  body.camp.haspnav .toc{position:static;box-shadow:none;width:auto}
+}
 </style>
 </head>
 <body>
@@ -248,6 +269,7 @@ details.notes ul{margin-top:10px;padding-left:20px;font-size:14px;line-height:1.
 <div class="main">
   <button id="tocbar">目录 ▾ <b>总览</b></button>
   <aside class="toc" id="tree"></aside>
+  <nav class="pnav" id="pnav"></nav>
   <main class="reader" id="reader"></main>
   <section class="chat">
     <div class="chead">
@@ -768,7 +790,7 @@ const card=id=>CARDS.find(c=>c.id===id);
 const lvl=id=>LEVELS.find(l=>l.id===id);
 const lvName=id=>id===9?'进阶':'第 '+id+' 关 · '+lvl(id).name;
 
-const S={view:{type:'home'},seen:new Set(),did:new Set(),mode:null,pi:0,busy:false,chan:'a',cview:{type:'chome'},ver:'stu',open:new Set(),openTouched:new Set()};
+const S={view:{type:'home'},seen:new Set(),did:new Set(),mode:null,pi:0,busy:false,chan:'a',cview:{type:'chome'},ver:'stu',closed:new Set()};
 const TEA=()=>S.ver==='tea';
 const verBar=()=>`<div class="verbar"><button data-ver="stu" class="${TEA()?'':'on'}">学员版</button><button data-ver="tea" class="${TEA()?'on':''}">讲师版（给悦姐）</button><span>${TEA()?'多了原理揭秘、海报对照和讲师备注':'只看怎么做'}</span></div>`;
 
@@ -777,14 +799,13 @@ function campTree(){
   const v=S.cview;
   let h=`<div class="toc-title">实训营学员手册 · 目录（按海报排）</div>
     <div class="ch"><div class="ch-head ${v.type==='chome'?'on':''}" data-cdo="chome"><span class="ch-icon">总</span>总览：两天一夜怎么走</div></div>`;
-  const cur=v.type==='citem'?citem(v.id).b.id:v.type==='cblock'?v.id:null;
-  if(cur&&!S.openTouched.has(cur))S.open.add(cur);
   CAMP.forEach(b=>{
-    const open=S.open.has(b.id);
+    const open=!S.closed.has(b.id);
     h+=`<div class="ch ${open?'':'closed'}"><div class="ch-head ${v.type==='cblock'&&v.id===b.id?'on':''}" data-cblock="${b.id}"><span class="ch-icon w">${b.icon}</span>${b.name}<span class="ch-n">${b.items.length}</span><button class="caret" data-ctog="${b.id}" title="展开/收起">${open?'▾':'▸'}</button></div>
-      ${b.items.map(it=>{const on=v.type==='citem'&&v.id===it.id;return `<div class="it ${on?'on':''}" data-citem="${it.id}" ${it.body?'title="正文初稿已写"':''}><span class="st" ${it.body?'style="background:var(--ok)"':''}></span>${it.no?it.no+' ':''}${it.t}${it.fix&&TEA()?'<span class="fx" title="海报口径要改">⚠</span>':''}${it.time?`<span class="tm">${it.time}</span>`:''}</div>${on&&it.body?`<div class="sub">${secList(it).map(x=>`<div class="subi l${x.l}" data-goto="${x.id}">${x.label}</div>`).join('')}</div>`:''}`}).join('')}</div>`;
+      ${b.items.map(it=>{const on=v.type==='citem'&&v.id===it.id;return `<div class="it ${on?'on':''}" data-citem="${it.id}" ${it.body?'title="正文初稿已写"':''}><span class="st" ${it.body?'style="background:var(--ok)"':''}></span>${it.no?it.no+' ':''}${it.t}${it.fix&&TEA()?'<span class="fx" title="海报口径要改">⚠</span>':''}${it.time?`<span class="tm">${it.time}</span>`:''}</div>`}).join('')}</div>`;
   });
   $('#tree').innerHTML=h;
+  renderPnav();
 }
 function campReader(){
   const v=S.cview;
@@ -853,6 +874,11 @@ function secList(it){
   if(TEA())out.push({id:'sx-notes',label:'讲师备注',l:1});
   return out;
 }
+function renderPnav(){
+  const el=$('#pnav'),v=S.cview,on=S.chan==='b'&&v.type==='citem'&&citem(v.id).it.body;
+  document.body.classList.toggle('haspnav',!!on);
+  el.innerHTML=on?`<div class="pn-title">本节导航</div>${secList(citem(v.id).it).map(x=>`<div class="subi l${x.l}" data-goto="${x.id}">${x.label}</div>`).join('')}<button id="tocbtn">课程目录 ▸</button>`:'';
+}
 function secChips(it){return `<div class="secnav">${secList(it).filter(x=>x.l===1).map(x=>`<button data-goto="${x.id}">${x.label}</button>`).join('')}</div>`}
 function goSec(id){const el=document.getElementById(id);if(!el)return;S.lastGoto=id;document.body.classList.remove('tocopen');el.scrollIntoView({block:'start'});setTimeout(spy,30)}
 function spy(){
@@ -883,9 +909,9 @@ async function fillJunshi(){
 }
 function campHash(){const v=S.cview;return '#camp'+(TEA()?'-t':'')+(v.type==='citem'?'/'+v.id:'')}
 function tocLabel(){const v=S.cview;const t=v.type==='citem'?citem(v.id).it:null;const b=v.type==='cblock'?CAMP.find(x=>x.id===v.id):null;return t?(t.no?t.no+' ':'')+t.t:b?b.name:'总览'}
-function openC(v){S.cview=v;document.body.classList.remove('tocopen');history.replaceState(null,'',campHash());renderTree();renderReader();$('#reader').scrollTop=0;window.scrollTo(0,0);$('#tocbar b').textContent=tocLabel();fillJunshi();spy();const tr=document.getElementById('tree'),cu=tr.querySelector('.it.on');if(cu)tr.scrollTop+=cu.getBoundingClientRect().top-tr.getBoundingClientRect().top-8}
+function openC(v){S.cview=v;document.body.classList.remove('tocopen');history.replaceState(null,'',campHash());renderTree();renderReader();$('#reader').scrollTop=0;window.scrollTo(0,0);$('#tocbar b').textContent=tocLabel();fillJunshi();spy();const tr=document.getElementById('tree'),cu=tr.querySelector('.it.on');if(cu)tr.scrollTop+=cu.getBoundingClientRect().top-tr.getBoundingClientRect().top-140}
 function setChan(c){
-  S.chan=c;document.body.classList.toggle('camp',c==='b');
+  S.chan=c;if(c!=='b'){document.body.classList.remove('haspnav','tocopen');$('#pnav').innerHTML=''}document.body.classList.toggle('camp',c==='b');
   document.querySelectorAll('#chans button').forEach(x=>x.classList.toggle('on',x.dataset.chan===c));
   $('#btag').textContent=c==='b'?'实训营 · 目录稿':'Demo v2 · ChatGPT';
   history.replaceState(null,'',c==='b'?campHash():location.pathname);
@@ -1117,17 +1143,19 @@ async function doAction(a,btn){
 }
 
 /* ================= 事件 ================= */
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.body.classList.remove('tocopen')});
 document.addEventListener('click',e=>{
-  const t=e.target.closest('#tocbar,[data-ctog],[data-goto],[data-ver],[data-chan],[data-copy],[data-cdo],[data-cblock],[data-citem],[data-mode],[data-do],[data-ask],[data-card],[data-ch]');if(!t)return;
+  if(document.body.classList.contains('tocopen')&&!e.target.closest('#tree,#tocbtn,#tocbar'))document.body.classList.remove('tocopen');
+  const t=e.target.closest('#tocbar,#tocbtn,[data-ctog],[data-goto],[data-ver],[data-chan],[data-copy],[data-cdo],[data-cblock],[data-citem],[data-mode],[data-do],[data-ask],[data-card],[data-ch]');if(!t)return;
   if(t.disabled)return;
   if(t.dataset.chan){if(S.chan!==t.dataset.chan)setChan(t.dataset.chan);return}
   if(t.dataset.ver){S.ver=t.dataset.ver;history.replaceState(null,'',campHash());renderTree();renderReader();fillJunshi();spy();return}
   if(t.dataset.goto){goSec(t.dataset.goto);return}
-  if(t.dataset.ctog){e.stopPropagation();const id=t.dataset.ctog;S.openTouched.add(id);S.open.has(id)?S.open.delete(id):S.open.add(id);renderTree();spy();return}
-  if(t.id==='tocbar'){document.body.classList.toggle('tocopen');return}
+  if(t.dataset.ctog){e.stopPropagation();const id=t.dataset.ctog;S.closed.has(id)?S.closed.delete(id):S.closed.add(id);renderTree();spy();return}
+  if(t.id==='tocbar'||t.id==='tocbtn'){document.body.classList.toggle('tocopen');return}
   if(t.dataset.copy!==undefined){const o=t.textContent;(navigator.clipboard?navigator.clipboard.writeText(t.dataset.copy):Promise.reject()).then(()=>{t.textContent='已复制 ✓';setTimeout(()=>t.textContent=o,1200)}).catch(()=>{});return}
   if(t.dataset.cdo)return openC({type:t.dataset.cdo});
-  if(t.dataset.cblock){S.open.add(t.dataset.cblock);return openC({type:'cblock',id:t.dataset.cblock})}
+  if(t.dataset.cblock){S.closed.delete(t.dataset.cblock);return openC({type:'cblock',id:t.dataset.cblock})}
   if(t.dataset.citem)return openC({type:'citem',id:t.dataset.citem});
   if(t.dataset.mode){if(S.mode!==t.dataset.mode)doAction(t.dataset.mode==='guide'?'start-guide':'free');return}
   if(t.dataset.do)return doAction(t.dataset.do,t);
