@@ -201,6 +201,12 @@ body.camp .main{grid-template-columns:320px minmax(0,1fr)}
 .secnav{display:none}
 #tocbar{display:none}
 [id^="sx-"]{scroll-margin-top:16px}
+a.gl{color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent);cursor:pointer}
+a.gl:hover{color:var(--accent)}
+.glitem h2{font-size:18px;align-items:baseline}.glitem h2 small{font-size:12px;color:var(--sub);font-weight:400;font-family:inherit}
+.glitem .body{margin-top:-4px}.glu{font-size:13px;color:var(--sub);margin-top:6px}.glu a{color:var(--accent);cursor:pointer}
+.glitem.flash{animation:secflash 1.8s}
+[id^="gl-"]{scroll-margin-top:16px}
 .verbar{display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap}
 .verbar button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;cursor:pointer;font-size:12px;color:var(--sub)}
 .verbar button.on{background:var(--ink);border-color:var(--ink);color:#fff}
@@ -410,7 +416,6 @@ const CAMP=[
    quick:['把课前交的 3 样资料（价目表、常见问题、照片）拖进「资料」文件夹','在 Codex 里说出公司全称和城市','等 1 分钟左右，它会告诉你查到了什么','它请你核对，哪里不对直接说','打开「企业档案」看一眼，每条后面都写了从哪来的'],
    why:'AI 不认识你的公司，不给它资料，它只能瞎猜。这一步就像给新员工一本公司手册：它上网查一遍，再加上你交的资料，整理成一份「企业档案」，你拍板。后面做官网、小工具、话术，事实都从这份档案里拿；档案对了，后面就不会错。',
    reveal:[
-    ['「企业知识库」「企业档案」是什么？','就是工作区里的一个文件，叫「企业档案」，写着公司是谁、卖什么、多少钱、怎么联系。海报说的「企业知识库」指的就是它。'],
     ['它从哪查的？','官网、公众号、地图和点评、工商信息、新闻。每条后面都写了出处，能点开核对。'],
     ['海报写「读懂你的电脑」，真的会扫电脑吗？','不会。它只看你放进「资料」文件夹的东西和网上公开的信息，不翻电脑里别的文件。'],
     ['为什么非要老板核对？','AI 会搜到同名的公司，或者网上的旧信息。价格、电话这些，以老板说的为准。'],
@@ -677,7 +682,6 @@ const CAMP=[
    why:'官网和小工具现在只在你自己电脑里，就像菜做好了还在自家厨房，客户吃不到。这一步把它们放到网上，拿到一个网址，发给谁都能打开。放在 GitHub 上，免费，不用买服务器。',
    reveal:[
     ['「上传到 GitHub」到底是什么？','Codex 把「发布」文件夹整个传上去，跟网盘同步一个意思，不是复制粘贴。以后改了内容再传一次，网址不变，内容变新。'],
-    ['GitHub 是什么？','一个放网站文件的网站，每个账号送一块免费空间，传上去就能用网址打开。好比商场送你一个铺位，不收租。'],
     ['为什么要关 Wi-Fi 测？','你家网络能打开，不代表客户能打开。用流量打开一次，才算真的放到网上了。'],
     ['小程序为什么不上线？','正式上架要企业认证、审核、备案，至少一两周，课上做不完。今天只用测试号在自己手机上看。'],
     ['老板常问：要钱吗？','不要。'],
@@ -762,6 +766,30 @@ const CAMP=[
  {id:'stuck',icon:'坑',name:'卡住了',full:'卡住了｜坑和突发情况总表',goal:'所有节的「坑」加上现场突发预案，汇成一张能搜的表',items:[
   {id:'s1',t:'坑和突发情况总表',do:'按「现象 → 怎么办」排；网络、账号、软件、各节专项分开列',who:'学员、助教'}]}
 ];
+const GLOSS=[
+ {k:'ChatGPT 桌面版',a:['桌面版'],d:'装在电脑上的 ChatGPT 软件，Codex 就在它里面。',u:'a1'},
+ {k:'Codex',a:[],d:'ChatGPT 桌面版里能直接动手干活的 AI：写网页、改文件、生图都靠它，是这两天的主力。',u:'a1'},
+ {k:'工作区',a:[],d:'你电脑上用公司名命名的那个文件夹，这两天做的东西都放在里面。',u:'a1'},
+ {k:'实训营助手',a:['ai-camp'],d:'讲师发给你的一套干活说明书，放在工作区里。你说「下一步」，Codex 就知道这一步该做什么。',u:'a1'},
+ {k:'skill',a:[],d:'写给 AI 的岗位说明书：什么时候用、按什么步骤、做完怎么检查。实训营助手就是一个 skill；第二天你还会做一个自己的。',u:'e3'},
+ {k:'「资料」文件夹',a:['资料文件夹'],d:'工作区里的一个文件夹，放你课前交的价目表、常见问题、照片。',u:'a2'},
+ {k:'企业档案',a:['企业知识库'],d:'工作区里的一个文件，写着公司是谁、卖什么、多少钱、怎么联系。后面做官网、话术，事实都从这里拿。海报说的「企业知识库」就是它。',u:'a2'},
+ {k:'官网',a:[],d:'你公司的网站，客户搜到你、点开看的那几页。今天由 Codex 直接写出来。',u:'a3'},
+ {k:'GEO',a:[],d:'让豆包、DeepSeek 这类 AI 搜索更容易读懂、说对你家信息的准备工作。跟以前做百度排名一个意思，只是对象换成了 AI。',u:'a4'},
+ {k:'小工具',a:[],d:'送给客户用的一个小网页，比如「算算聚餐要多少钱」，客户用完顺手留个电话。',u:'b2'},
+ {k:'客户表单',a:['客户表'],d:'飞书里的一张表单。客户在小工具里填的称呼和电话，会存进你的飞书表格。',u:'b2'},
+ {k:'插件',a:[],d:'给 Codex 加的新本事，装上就能用，比如剪视频的 ChatCut。',u:'b3'},
+ {k:'ChatCut',a:[],d:'给 Codex 装的剪视频插件，装好后用嘴就能让它剪视频。',u:'b3'},
+ {k:'话术',a:[],d:'跟客户说话的现成稿子：开场白、客户常见回答怎么接、怎么收尾。',u:'b4'},
+ {k:'军师',a:['岗位军师'],d:'56 张写好的提示词卡，每张只干一件事（比如「客户嫌贵怎么回」），复制给 Codex 就能用。',u:'b4'},
+ {k:'测试号',a:['小程序测试号'],d:'微信给的试用身份：做出来的小程序只有你自己能扫码看，正式给客户用要另外申请上架。',u:'b5'},
+ {k:'Hermes',a:['爱马仕'],d:'另一个装在你电脑上的 AI 程序，替你守着飞书或微信：你在手机上发话，它在电脑上干活。',u:'e1'},
+ {k:'AI 员工',a:[],d:'装了你公司资料和话术的 Hermes，手机上问它价格、让它写回复，都按你家的口径来。',u:'e2'},
+ {k:'GitHub',a:[],d:'一个放网站文件的网站，每个账号送一块免费空间，网页放上去就有网址，谁都能打开。',u:'e4'},
+ {k:'上线',a:[],d:'把做好的网页放到网上，拿到一个手机、电脑都能打开的网址。',u:'e4'},
+ {k:'数字人',a:[],d:'用你的样子和声音做出来的视频人像，照着稿子替你说话。',u:'f3'}
+];
+const glId=k=>'gl-'+GLOSS.findIndex(g=>g.k===k);
 const CFLAT=[];CAMP.forEach(b=>b.items.forEach(it=>CFLAT.push(it.id)));
 const PHRASES=['用实训营助手（ai-camp）开始','下一步','现在到哪了','跟上进度','重做第 N 步'];
 const citem=id=>{for(const b of CAMP){const it=b.items.find(x=>x.id===id);if(it)return {b,it}}};
@@ -809,7 +837,8 @@ const verBar=()=>`<div class="verbar"><button data-ver="stu" class="${TEA()?'':'
 function campTree(){
   const v=S.cview;
   let h=`<div class="toc-title">实训营学员手册 · 目录（按海报排）</div>
-    <div class="ch"><div class="ch-head ${v.type==='chome'?'on':''}" data-cdo="chome"><span class="ch-icon">总</span>总览：两天一夜怎么走</div></div>`;
+    <div class="ch"><div class="ch-head ${v.type==='chome'?'on':''}" data-cdo="chome"><span class="ch-icon">总</span>总览：两天一夜怎么走</div></div>
+    <div class="ch"><div class="ch-head ${v.type==='gloss'?'on':''}" data-cdo="gloss"><span class="ch-icon">词</span>名词表<span class="ch-n">${GLOSS.length}</span></div></div>`;
   CAMP.forEach(b=>{
     const open=!S.closed.has(b.id);
     h+=`<div class="ch ${open?'':'closed'}"><div class="ch-head ${v.type==='cblock'&&v.id===b.id?'on':''}" data-cblock="${b.id}"><span class="ch-icon w">${b.icon}</span>${b.name}<span class="ch-n">${b.items.length}</span><button class="caret" data-ctog="${b.id}" title="展开/收起">${open?'▾':'▸'}</button></div>
@@ -836,6 +865,7 @@ function campReader(){
         <p class="body" style="font-size:13px">每节先「基础版」讲核心几步：人人都要做到，跟不上的人也只追这几步；再「完整版」把完整流程讲透，配截图。悦姐看基础版就能设计课程；学员和助教照完整版做。讲师备注默认折叠。</p></div>
     </div>`;
   }
+  if(v.type==='gloss')return glossHTML();
   if(v.type==='cblock'){
     const b=CAMP.find(x=>x.id===v.id);
     return `<div class="inner">
@@ -903,6 +933,40 @@ function spy(){
   document.querySelectorAll('[data-goto]').forEach(x=>x.classList.toggle('on',x.dataset.goto===curId||(x.closest('.secnav')&&x.dataset.goto===top)||(x.classList.contains('l1')&&x.dataset.goto===top&&!document.querySelector('.subi.l2[data-goto="'+curId+'"]'))));
   const chip=document.querySelector('.secnav button.on');if(chip&&chip.parentElement.scrollWidth>chip.parentElement.clientWidth)chip.parentElement.scrollLeft=chip.offsetLeft-60;
 }
+function linkTerms(){
+  if(S.chan!=='b'||S.cview.type!=='citem')return;
+  const root=document.querySelector('#reader .inner');if(!root)return;
+  const keys=[];GLOSS.forEach(g=>[g.k,...g.a].forEach(x=>keys.push([x,g.k])));
+  keys.sort((a,b)=>b[0].length-a[0].length);
+  const re=new RegExp(keys.map(x=>x[0].replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'));
+  const map=Object.fromEntries(keys),done=new Set();
+  const skip='h1,h2,h3,button,a,.verbar,.crumb,.meta,figure,pre,summary,.quote,.jsc,.secnav,.navrow,.posterbox';
+  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement.closest(skip)?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+  const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
+  for(let node of nodes){
+    let guard=0;
+    while(node&&guard++<20){
+      const txt=node.nodeValue;let m=null,idx=-1;
+      const r2=new RegExp(re.source,'g');let mm;
+      while((mm=r2.exec(txt))){if(!done.has(map[mm[0]])){m=mm[0];idx=mm.index;break}}
+      if(!m)break;
+      done.add(map[m]);
+      const after=node.splitText(idx);const rest=after.splitText(m.length);
+      const a=document.createElement('a');a.className='gl';a.dataset.gl=map[m];a.textContent=m;
+      after.parentNode.replaceChild(a,after);node=rest;
+    }
+  }
+}
+function glossHTML(){
+  const back=S.back&&S.back.view.type==='citem'?citem(S.back.view.id).it:null;
+  return `<div class="inner">
+    ${verBar()}<div class="crumb"><a data-cdo="chome">实训营</a> / 名词表</div>
+    <h1 class="rtitle">名词表</h1>
+    <p class="lead1">这两天会碰到的词，每个两句话说清。正文里带虚线的词，点一下就跳到这里。</p>
+    ${back?`<button class="btn" data-back="1">← 回到「${back.t}」</button><br><br>`:''}
+    ${GLOSS.map((g,i)=>{const u=citem(g.u);return `<div class="sec glitem" id="gl-${i}"><h2>${g.k}${g.a.length?`<small>也叫：${g.a.join('、')}</small>`:''}</h2><p class="body">${g.d}</p>${u?`<p class="glu">第一次用到：<a data-citem="${g.u}">${u.b.name.split(' · ')[0]} ${u.it.no||''} ${u.it.t}</a></p>`:''}</div>`}).join('')}
+  </div>`;
+}
 function pitsAllHTML(){
   let n=0;const parts=[];
   CAMP.forEach(b=>b.items.forEach(it=>{if(it.body&&it.body.pits&&it.body.pits.length){n+=it.body.pits.length;
@@ -918,9 +982,9 @@ async function fillJunshi(){
     <p class="jsm">你要给它：${esc(x.give)}　·　交回来：${esc(x.output)}　·　适合：${esc([].concat(x.industry).join('、'))}</p>
     <pre class="jsp">${esc(x.prompt)}</pre><button class="btn primary" data-copy="${esc(x.prompt)}">复制提示词</button></details>`).join(''):''}).join('');
 }
-function campHash(){const v=S.cview;return '#camp'+(TEA()?'-t':'')+(v.type==='citem'?'/'+v.id:'')}
-function tocLabel(){const v=S.cview;const t=v.type==='citem'?citem(v.id).it:null;const b=v.type==='cblock'?CAMP.find(x=>x.id===v.id):null;return t?(t.no?t.no+' ':'')+t.t:b?b.name:'总览'}
-function openC(v){S.cview=v;document.body.classList.remove('tocopen');history.replaceState(null,'',campHash());renderTree();renderReader();$('#reader').scrollTop=0;window.scrollTo(0,0);$('#tocbar b').textContent=tocLabel();fillJunshi();spy()}
+function campHash(){const v=S.cview;return '#camp'+(TEA()?'-t':'')+(v.type==='citem'?'/'+v.id:v.type==='gloss'?'/gloss':'')}
+function tocLabel(){const v=S.cview;const t=v.type==='citem'?citem(v.id).it:null;const b=v.type==='cblock'?CAMP.find(x=>x.id===v.id):null;return t?(t.no?t.no+' ':'')+t.t:b?b.name:v.type==='gloss'?'名词表':'总览'}
+function openC(v){if(v.type!=='gloss'&&S.cview.type==='gloss'&&!(S.back&&S.back.view===v))S.back=null;S.cview=v;document.body.classList.remove('tocopen');history.replaceState(null,'',campHash());renderTree();renderReader();$('#reader').scrollTop=0;window.scrollTo(0,0);$('#tocbar b').textContent=tocLabel();fillJunshi();spy()}
 function revealCur(){const tr=document.getElementById('tree'),cu=tr.querySelector('.it.on');if(!cu)return;const a=cu.getBoundingClientRect(),b=tr.getBoundingClientRect();if(a.top<b.top||a.bottom>b.bottom)tr.scrollTop+=a.top-b.top-140}
 function setChan(c){
   S.chan=c;if(c!=='b'){document.body.classList.remove('haspnav','tocopen');$('#pnav').innerHTML=''}document.body.classList.toggle('camp',c==='b');
@@ -1002,7 +1066,7 @@ function gapHTML(){
 }
 function renderReader(){
   const v=S.view,R=$('#reader');
-  if(S.chan==='b'){R.innerHTML=campReader();return}
+  if(S.chan==='b'){R.innerHTML=campReader();linkTerms();return}
   R.innerHTML=v.type==='home'?homeHTML():v.type==='ch'?chHTML(v.id):v.type==='card'?cardHTML(v.id):gapHTML();
 }
 
@@ -1158,11 +1222,13 @@ async function doAction(a,btn){
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.body.classList.remove('tocopen')});
 document.addEventListener('click',e=>{
   if(document.body.classList.contains('tocopen')&&!e.target.closest('#tree,#tocbtn,#tocbar'))document.body.classList.remove('tocopen');
-  const t=e.target.closest('#tocbar,#tocbtn,[data-ctog],[data-goto],[data-ver],[data-chan],[data-copy],[data-cdo],[data-cblock],[data-citem],[data-mode],[data-do],[data-ask],[data-card],[data-ch]');if(!t)return;
+  const t=e.target.closest('[data-gl],[data-back],#tocbar,#tocbtn,[data-ctog],[data-goto],[data-ver],[data-chan],[data-copy],[data-cdo],[data-cblock],[data-citem],[data-mode],[data-do],[data-ask],[data-card],[data-ch]');if(!t)return;
   if(t.disabled)return;
   if(t.dataset.chan){if(S.chan!==t.dataset.chan)setChan(t.dataset.chan);return}
   if(t.dataset.ver){S.ver=t.dataset.ver;history.replaceState(null,'',campHash());renderTree();renderReader();fillJunshi();spy();return}
   if(t.dataset.goto){goSec(t.dataset.goto);return}
+  if(t.dataset.gl){S.back={view:S.cview,top:$('#reader').scrollTop,win:window.scrollY};openC({type:'gloss'});const el=document.getElementById(glId(t.dataset.gl));if(el){el.scrollIntoView({block:'start'});el.classList.add('flash')}return}
+  if(t.dataset.back){const b=S.back;S.back=null;openC(b.view);$('#reader').scrollTop=b.top;window.scrollTo(0,b.win);spy();return}
   if(t.dataset.ctog){e.stopPropagation();const id=t.dataset.ctog;S.closed.has(id)?S.closed.delete(id):S.closed.add(id);renderTree();spy();return}
   if(t.id==='tocbar'||t.id==='tocbtn'){document.body.classList.toggle('tocopen');return}
   if(t.dataset.copy!==undefined){const o=t.textContent;(navigator.clipboard?navigator.clipboard.writeText(t.dataset.copy):Promise.reject()).then(()=>{t.textContent='已复制 ✓';setTimeout(()=>t.textContent=o,1200)}).catch(()=>{});return}
@@ -1183,7 +1249,7 @@ $('#topq').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)ask($('#topq').value
 /* ================= 启动 ================= */
 $('#reader').addEventListener('scroll',spy,{passive:true});window.addEventListener('scroll',spy,{passive:true});
 renderTree();renderReader();renderProg();updateCtx();
-(()=>{const m=location.hash.match(/^#camp(-t)?(?:\/(\w+))?$/);if(!m)return;if(m[1])S.ver='tea';setChan('b');if(m[2]&&citem(m[2])){openC({type:'citem',id:m[2]});revealCur()}else $('#tocbar b').textContent=tocLabel()})();
+(()=>{const m=location.hash.match(/^#camp(-t)?(?:\/(\w+))?$/);if(!m)return;if(m[1])S.ver='tea';setChan('b');if(m[2]&&citem(m[2])){openC({type:'citem',id:m[2]});revealCur()}else if(m[2]==='gloss')openC({type:'gloss'});else $('#tocbar b').textContent=tocLabel()})();
 (async()=>{
   await botSay(['我是杰哥的 AI 分身。口气是杰哥的，人不是。']);
   await botSay(['摸底下来，你用过 AI，建议从第 2 关「指挥它改」开始。','你想怎么学？跟着我一步步走，还是自己翻、卡住了再叫我？'],
