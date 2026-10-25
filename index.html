@@ -216,6 +216,7 @@ a.gl:hover{color:var(--accent)}
 .tag{display:inline-block;background:#f1ede4;border-radius:6px;padding:0 8px;margin:0 2px;font-size:.93em;line-height:1.75;color:var(--ink)}
 .formula{font-size:17px;font-weight:600;color:var(--ink);background:#f6f2ea;border-radius:10px;padding:12px 16px;margin:6px 0 12px;line-height:1.8}
 .sec.lesson{border:1.5px solid #e9dcc3}
+.dlbox{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:4px 0 18px}.dlbox span{font-size:13px;color:var(--sub);line-height:1.7;flex:1;min-width:220px}a.btn{text-decoration:none;display:inline-block}
 .skstep code{font-family:inherit;background:#f1ede4;border-radius:4px;padding:0 4px;font-size:.92em}.skstep{padding:10px 0;border-top:1px dashed #eadfcb}.skstep:first-of-type{border-top:0}.skstep .sh small{font-weight:400;color:var(--sub);font-size:12.5px;margin-left:6px}.skstep .sd b{display:inline-block;min-width:5.5em;color:var(--sub);font-weight:500}
 .verbar{display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap}
 .verbar button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;cursor:pointer;font-size:12px;color:var(--sub)}
@@ -794,6 +795,7 @@ function skillHTML(){
   const say=a=>a.map(x=>`<span class="tag">${esc(x)}</span>`).join(' ');const md=x=>esc(x).replace(/`([^`]+)`/g,'<code>$1</code>');
   return head+`
     <p class="lead1">这是装在学员电脑里、给 Codex 看的课程说明书。学员说一件真实的活，Codex 翻到对应那一步，照这门课的约定去做。下面就是它的全部内容，也就是这门课的大纲。</p>
+    <div class="dlbox"><a class="btn" href="downloads/ai-camp-workspace.zip" download>下载工作区模板（含实训营助手）</a><span>解压后改成公司名，在 Codex 里新建项目选它，说「用实训营助手（ai-camp）开始」。最近更新：${M.synced}</span></div>
     <div class="sec lesson"><h2><i>口诀</i>学员怎么开口</h2><div class="formula">基于【什么资料】，帮我做【什么】，给【谁】用，做完【我怎么检查】</div><p class="body why">D1 上午 02 开头讲一次，之后每一节都在练这句话。学员不用记「第几步」，也不用说「下一步」。</p></div>
     ${groups.map(g=>`<div class="sec"><h2><i>${g.when}</i>${g.list.map(x=>x.name).join('、')}</h2>${g.list.map(x=>`<div class="skstep"><div class="sh">第 ${x.n} 步 · ${x.name}${x.pre&&x.pre!=='—'?`<small>（先要有第 ${x.pre} 步）</small>`:''}</div>
       <p class="sd"><b>学员一般说</b>${say(x.say)}</p><p class="sd"><b>做出什么</b>${md(x.make)}</p><p class="sd"><b>交出</b>${md(x.out)}</p>${x.red?`<p class="sd"><b>红线</b>${md(x.red)}</p>`:''}</div>`).join('')}</div>`).join('')}
