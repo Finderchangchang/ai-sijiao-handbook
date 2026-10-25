@@ -236,22 +236,24 @@ details.notes ul{margin-top:10px;padding-left:20px;font-size:14px;line-height:1.
 @media(max-width:900px){body.camp .reader{overflow:visible}body.camp #tocbar{display:flex;gap:6px;align-items:center;width:100%;border:none;border-bottom:1px solid var(--line);background:#faf8f3;padding:10px 14px;font:inherit;font-size:13px;color:var(--sub);cursor:pointer;text-align:left}body.camp #tocbar b{color:var(--ink);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}body.camp .toc{display:none;max-height:none}body.camp.tocopen .toc{display:block}body.camp .secnav{display:flex;gap:6px;overflow-x:auto;position:sticky;top:0;z-index:5;background:var(--paper);padding:8px 0;margin:0 0 12px;border-bottom:1px solid var(--line);scrollbar-width:none}body.camp .secnav::-webkit-scrollbar{display:none}.secnav button{flex:none;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;font-size:12.5px;color:var(--sub);cursor:pointer}.secnav button.on{background:var(--accent);border-color:var(--accent);color:#fff}body.camp [id^="sx-"]{scroll-margin-top:60px}.top{gap:8px;padding:0 10px}.tag,.me{display:none}.brand{font-size:14px;gap:6px}.logo{width:28px;height:28px}.chans{margin-left:auto}.chans button{padding:5px 8px;font-size:12px}.main,body.camp .main{grid-template-columns:1fr;height:auto}.reader{padding:20px 14px 50px}.sec{padding:16px 14px}.rtitle{font-size:26px}.pit{grid-template-columns:1fr}.toc{max-height:280px;border-right:none;border-bottom:1px solid var(--line)}.chat{height:85vh;border-left:none;border-top:1px solid var(--line)}.search{display:none}}
 /* 本节导航列：整屏三栏，半屏两栏（目录收进按钮），手机隐藏 */
 .pnav{display:none}
-body.camp.haspnav .main{grid-template-columns:290px 190px minmax(0,1fr)}
-body.camp.haspnav .pnav{display:flex;flex-direction:column;border-right:1px solid var(--line);background:#fcfbf8;overflow:auto;padding:20px 10px 14px}
+.rwrap{display:flex;justify-content:center;align-items:flex-start;gap:28px}
+.rwrap .inner{margin:0;flex:1 1 auto;min-width:0}
+.pnav2{position:sticky;top:-24px;margin-top:78px;flex:none;width:176px;display:flex;flex-direction:column;max-height:calc(100vh - 110px);overflow:auto;padding:4px 0}
 .pn-title{font-size:12px;color:var(--sub);font-family:var(--mono);margin:0 8px 10px;display:flex;align-items:center;gap:6px}
 .pn-title::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent)}
-.pnav .subi{font-size:13px;padding:6px 10px}
-.pnav .subi.l2{font-size:12.5px;padding-left:22px}
+.pnav2 .subi{font-size:13px;padding:6px 10px}
+.pnav2 .subi.l2{font-size:12.5px;padding-left:22px}
 #tocbtn{display:none}
 @media(max-width:1200px){
-  body.camp.haspnav .main{grid-template-columns:190px minmax(0,1fr)}
+  body.camp.haspnav .main{grid-template-columns:minmax(0,1fr)}
   body.camp.haspnav .toc{display:none;position:fixed;left:0;top:60px;bottom:0;width:300px;z-index:30;box-shadow:6px 0 24px rgba(0,0,0,.12)}
   body.camp.haspnav.tocopen .toc{display:block}
-  body.camp.haspnav #tocbtn{display:block;margin-top:auto;border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 10px;font:inherit;font-size:13px;color:var(--ink);cursor:pointer;text-align:left}
+  body.camp.haspnav #tocbtn{display:block;margin-top:14px;border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 10px;font:inherit;font-size:13px;color:var(--ink);cursor:pointer;text-align:left}
   body.camp.haspnav.tocopen #tocbtn{border-color:var(--accent);color:var(--accent)}
 }
 @media(max-width:900px){
-  body.camp .pnav,body.camp.haspnav .pnav{display:none}
+  body.camp .pnav2{display:none}
+  .rwrap{display:block}
   body.camp.haspnav .main{grid-template-columns:1fr}
   body.camp.haspnav .toc{position:static;box-shadow:none;width:auto}
 }
@@ -842,7 +844,7 @@ function campReader(){
     </div>`;
   }
   const {b,it}=citem(v.id),i=CFLAT.indexOf(v.id),prev=CFLAT[i-1],next=CFLAT[i+1];
-  return `<div class="inner">
+  return `<div class="rwrap">${it.body?pnavHTML(it):''}<div class="inner">
     ${verBar()}<div class="crumb"><a data-cdo="chome">实训营</a> / <a data-cblock="${b.id}">${b.name}</a> / ${it.t}</div>
     <h1 class="rtitle">${it.no?it.no+' ':''}${it.t}</h1>
     <div class="meta"><span>${b.full}</span>${it.time?`<span>·</span><span>${it.time}</span>`:''}<span>·</span><span>${it.who}</span>${it.step?`<span>·</span><span>助手里叫第 ${it.step} 步</span>`:''}${TEA()?`<span>·</span><span>${it.body?'正文初稿':'目录稿 · 正文待写'}</span>`:''}</div>
@@ -854,7 +856,7 @@ function campReader(){
     <div class="navrow">
       ${prev?`<button class="navbtn" data-citem="${prev}"><small>← 上一节</small>${citem(prev).it.t}</button>`:''}
       ${next?`<button class="navbtn r" data-citem="${next}"><small>下一节 →</small>${citem(next).it.t}</button>`:''}
-    </div></div>`;
+    </div></div></div>`;
 }
 function bodyHTML(B){
   return `${TEA()&&B.verify?`<div class="fixbox"><b>⚠ 开课前要实测：</b>${B.verify}</div>`:''}<div class="sec" id="sx-quick"><h2><i>基础版</i>核心几步，人人都要做到</h2><ol class="ql">${B.quick.map(x=>`<li>${x}</li>`).join('')}</ol></div>
@@ -881,10 +883,10 @@ function secList(it){
   if(TEA())out.push({id:'sx-notes',label:'讲师备注',l:1});
   return out;
 }
+function pnavHTML(it){return `<nav class="pnav2"><div class="pn-title">本节导航</div>${secList(it).map(x=>`<div class="subi l${x.l}" data-goto="${x.id}">${x.label}</div>`).join('')}<button id="tocbtn">课程目录 ▸</button></nav>`}
 function renderPnav(){
-  const el=$('#pnav'),v=S.cview,on=S.chan==='b'&&v.type==='citem'&&citem(v.id).it.body;
+  const v=S.cview,on=S.chan==='b'&&v.type==='citem'&&citem(v.id).it.body;
   document.body.classList.toggle('haspnav',!!on);
-  el.innerHTML=on?`<div class="pn-title">本节导航</div>${secList(citem(v.id).it).map(x=>`<div class="subi l${x.l}" data-goto="${x.id}">${x.label}</div>`).join('')}<button id="tocbtn">课程目录 ▸</button>`:'';
 }
 function secChips(it){return `<div class="secnav">${secList(it).filter(x=>x.l===1).map(x=>`<button data-goto="${x.id}">${x.label}</button>`).join('')}</div>`}
 function goSec(id){const el=document.getElementById(id);if(!el)return;S.lastGoto=id;document.body.classList.remove('tocopen');el.scrollIntoView({block:'start'});setTimeout(spy,30)}
