@@ -884,6 +884,11 @@ function secList(it){
   return out;
 }
 function pnavHTML(it){return `<nav class="pnav2"><div class="pn-title">本节导航</div>${secList(it).map(x=>`<div class="subi l${x.l}" data-goto="${x.id}">${x.label}</div>`).join('')}<button id="tocbtn">课程目录 ▸</button></nav>`}
+function centerNav(){
+  if(!document.body.classList.contains('navmid'))return;const nav=document.querySelector('.pnav2');if(!nav)return;
+  const r=document.getElementById('reader'),t=Math.max(16,(r.clientHeight-nav.offsetHeight)/2);
+  nav.style.top=(t-40)+'px';nav.style.marginTop=Math.max(0,t-40)+'px';
+}
 function renderPnav(){
   const v=S.cview,on=S.chan==='b'&&v.type==='citem'&&citem(v.id).it.body;
   document.body.classList.toggle('haspnav',!!on);
@@ -918,7 +923,7 @@ async function fillJunshi(){
 }
 function campHash(){const v=S.cview;return '#camp'+(TEA()?'-t':'')+(v.type==='citem'?'/'+v.id:'')}
 function tocLabel(){const v=S.cview;const t=v.type==='citem'?citem(v.id).it:null;const b=v.type==='cblock'?CAMP.find(x=>x.id===v.id):null;return t?(t.no?t.no+' ':'')+t.t:b?b.name:'总览'}
-function openC(v){S.cview=v;document.body.classList.remove('tocopen');history.replaceState(null,'',campHash());renderTree();renderReader();$('#reader').scrollTop=0;window.scrollTo(0,0);$('#tocbar b').textContent=tocLabel();fillJunshi();spy();const tr=document.getElementById('tree'),cu=tr.querySelector('.it.on');if(cu)tr.scrollTop+=cu.getBoundingClientRect().top-tr.getBoundingClientRect().top-140}
+function openC(v){S.cview=v;document.body.classList.remove('tocopen');history.replaceState(null,'',campHash());renderTree();renderReader();$('#reader').scrollTop=0;window.scrollTo(0,0);$('#tocbar b').textContent=tocLabel();fillJunshi();spy();centerNav();const tr=document.getElementById('tree'),cu=tr.querySelector('.it.on');if(cu)tr.scrollTop+=cu.getBoundingClientRect().top-tr.getBoundingClientRect().top-140}
 function setChan(c){
   S.chan=c;if(c!=='b'){document.body.classList.remove('haspnav','tocopen');$('#pnav').innerHTML=''}document.body.classList.toggle('camp',c==='b');
   document.querySelectorAll('#chans button').forEach(x=>x.classList.toggle('on',x.dataset.chan===c));
@@ -1158,7 +1163,7 @@ document.addEventListener('click',e=>{
   const t=e.target.closest('#tocbar,#tocbtn,[data-ctog],[data-goto],[data-ver],[data-chan],[data-copy],[data-cdo],[data-cblock],[data-citem],[data-mode],[data-do],[data-ask],[data-card],[data-ch]');if(!t)return;
   if(t.disabled)return;
   if(t.dataset.chan){if(S.chan!==t.dataset.chan)setChan(t.dataset.chan);return}
-  if(t.dataset.ver){S.ver=t.dataset.ver;history.replaceState(null,'',campHash());renderTree();renderReader();fillJunshi();spy();return}
+  if(t.dataset.ver){S.ver=t.dataset.ver;history.replaceState(null,'',campHash());renderTree();renderReader();fillJunshi();spy();centerNav();return}
   if(t.dataset.goto){goSec(t.dataset.goto);return}
   if(t.dataset.ctog){e.stopPropagation();const id=t.dataset.ctog;S.closed.has(id)?S.closed.delete(id):S.closed.add(id);renderTree();spy();return}
   if(t.id==='tocbar'||t.id==='tocbtn'){document.body.classList.toggle('tocopen');return}
@@ -1178,6 +1183,8 @@ $('#inp').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)ask($('#inp').value)}
 $('#topq').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)ask($('#topq').value)};
 
 /* ================= 启动 ================= */
+if(new URLSearchParams(location.search).get('nav')==='mid')document.body.classList.add('navmid');
+window.addEventListener('resize',centerNav);
 $('#reader').addEventListener('scroll',spy,{passive:true});window.addEventListener('scroll',spy,{passive:true});
 renderTree();renderReader();renderProg();updateCtx();
 (()=>{const m=location.hash.match(/^#camp(-t)?(?:\/(\w+))?$/);if(!m)return;if(m[1])S.ver='tea';setChan('b');if(m[2]&&citem(m[2]))openC({type:'citem',id:m[2]});else $('#tocbar b').textContent=tocLabel()})();
